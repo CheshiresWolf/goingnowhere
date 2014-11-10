@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string name="appname">RRR</string>
+	<string name="android_appname">RRR</string>
+    
+    <string name="ru_appname">RRR</string>
+    
+    <string name="ru_connecting_store">Соединяемся с магазином...</string>
+    <string name="uk_connecting_store">З'єднуємось з магазином...</string>
+    <string name="en_connecting_store">Connecting to store...</string>
+    
+    <string name="ru_error_buy_full_later">Ошибка: Покупка полной версии временно недоступна! Повторите попытку позже.</string>
+    <string name="uk_error_buy_full_later">Помилка: Купівля повної версії тимчасово недоступна! Повторіть спробу пізніше.</string>
+    <string name="en_error_buy_full_later">Error: Purchase of the full version is temporarily unavailable! Please try again later.</string>
+    
+    <string name="ru_error_buy_full_wrong_id">Ошибка: Покупка полной версии временно недоступна! Неверный ID продукта. Повторите попытку позже.</string>
+    <string name="uk_error_buy_full_wrong_id">Помилка: Купівля повної версії тимчасово недоступна! Неправильний ID продукту. Повторіть спробу пізніше.</string>
+    <string name="en_error_buy_full_wrong_id">Error: Purchase of the full version is temporarily unavailable! Invalid Product ID. Please try again later.</string>
+    
+    <string name="ru_buy_cancel">Покупка отменена.</string>
+    <string name="uk_buy_cancel">Купівля скасована.</string>
+    <string name="en_buy_cancel">Purchase was canceled.</string>
+    
+    <string name="ru_buy_error">Ошибка при покупке!</string>
+    <string name="uk_buy_error">Помилка при покупці!</string>
+    <string name="en_buy_error">Error when purchasing!</string>
+    
+    <string name="ru_error">Ошибка!</string>
+    <string name="uk_error">Помилка!</string>
+    <string name="en_error">Error!</string>
+    
+    <string name="ru_prev_buy_error">Прошлые покупки не найдены!</string>
+    <string name="uk_prev_buy_error">Минулі покупки не знайдені!</string>
+    <string name="en_prev_buy_error">Purchases were not found!</string>
+    
+    <string name="ru_buy_restored">Покупки восстановлены!</string>
+    <string name="uk_buy_restored">Покупки відновлено!</string>
+    <string name="en_buy_restored">Purchase was restored!</string>
+    
+    <string name="ru_thanks">Спасибо!</string>
+    <string name="uk_thanks">Дякуємо!</string>
+    <string name="en_thanks">Thank you!</string>
+    
+    
+    
+    <string name="ru_rate_us">Оцените нашу сказку!</string>
+    <string name="uk_rate_us">Оцініть нашу казку!</string>
+    <string name="en_rate_us">Rate this story!</string>
+    
+    <string name="ru_rate_us_message">Если вам понравилось приложение - напишите отзыв. Если нашли ошибку - напишите разработчику.</string>
+    <string name="uk_rate_us_message">Якщо вам сподобалась казка - напишіть відгук. Якщо знайшли помилку - напишіть розробнику.</string>
+    <string name="en_rate_us_message">If you like the application, rate us and write a review. If you find a mistake, write to the developers.</string>
+    
+    <string name="ru_rate_us_btn_write">Написать</string>
+    <string name="uk_rate_us_btn_write">Написати</string>
+    <string name="en_rate_us_btn_write">Rate</string>
+    
+    <string name="ru_rate_us_btn_later">Позже</string>
+    <string name="uk_rate_us_btn_later">Пізніше</string>
+    <string name="en_rate_us_btn_later">Later</string>
+    
+    <string name="ru_rate_us_btn_never">Никогда</string>
+    <string name="uk_rate_us_btn_never">Ніколи</string>
+    <string name="en_rate_us_btn_never">Never</string>
+    
+    
+    
+    <string name="ru_follow">Перейти</string>
+    <string name="uk_follow">Перейти</string>
+    <string name="en_follow">Follow</string>
+    
+    <string name="ru_cancel">Отмена</string>
+    <string name="uk_cancel">Скасувати</string>
+    <string name="en_cancel">Cancel</string>
+
+
+
+    <!-- Parent confirmer -->
+
+    <string name="ru_parent_confirmer_header">Только для родителей</string>
+    <string name="uk_parent_confirmer_header">Лише для батьків</string>
+    <string name="en_parent_confirmer_header">Parents only</string>
+
+    <string name="ru_parent_confirmer_task_description">Чтобы получить доступ введите:</string>
+    <string name="uk_parent_confirmer_task_description">Для отримання доступу введіть:</string>
+    <string name="en_parent_confirmer_task_description">Enter numbers to gain access:</string>
+
+    <string name="ru_number_0">ноль</string>
+    <string name="ru_number_1">один</string>
+    <string name="ru_number_2">два</string>
+    <string name="ru_number_3">три</string>
+    <string name="ru_number_4">четыре</string>
+    <string name="ru_number_5">пять</string>
+    <string name="ru_number_6">шесть</string>
+    <string name="ru_number_7">семь</string>
+    <string name="ru_number_8">восемь</string>
+    <string name="ru_number_9">девять</string>
+
+    <string name="uk_number_0">нуль</string>
+    <string name="uk_number_1">один</string>
+    <string name="uk_number_2">два</string>
+    <string name="uk_number_3">три</string>
+    <string name="uk_number_4">чотири</string>
+    <string name="uk_number_5">п'ять</string>
+    <string name="uk_number_6">шість</string>
+    <string name="uk_number_7">сім</string>
+    <string name="uk_number_8">вісім</string>
+    <string name="uk_number_9">дев'ять</string>
+    
+    <string name="en_number_0">zero</string>
+    <string name="en_number_1">one</string>
+    <string name="en_number_2">two</string>
+    <string name="en_number_3">three</string>
+    <string name="en_number_4">four</string>
+    <string name="en_number_5">five</string>
+    <string name="en_number_6">six</string>
+    <string name="en_number_7">seven</string>
+    <string name="en_number_8">eight</string>
+    <string name="en_number_9">nine</string>
+
+
+
+    <!-- Recording -->
+
+    <string name="ru_recording_new_prompt">Записать свой фильм?</string>
+    <string name="uk_recording_new_prompt">Записати свiй фiльм?</string>
+    <string name="en_recording_new_prompt">Record custom movie?</string>
+
+    <string name="ru_recording_new">Новая запись</string>
+    <string name="uk_recording_new">Новий запис</string>
+    <string name="en_recording_new">New record</string>
+
+    <string name="ru_recording_time">Время анимации</string>
+    <string name="uk_recording_time">Час анімації</string>
+    <string name="en_recording_time">Time of animation</string>
+
+    <string name="ru_delete_action">Удаление</string>
+    <string name="uk_delete_action">Видалення</string>
+    <string name="en_delete_action">Deleting</string>
+
+    <string name="ru_delete">Удалить</string>
+    <string name="uk_delete">Видалити</string>
+    <string name="en_delete">Delete</string>
+
+    <string name="ru_delete_prompt">Удалить запись?</string>
+    <string name="uk_delete_prompt">Видалити запис?</string>
+    <string name="en_delete_prompt">Delete record?</string>
+
+
+
+    <!-- Settings menu -->
+
+    <string name="settings_language_english">English</string>
+    <string name="settings_language_russian">Русский</string>
+    <string name="settings_language_ukrainian">Українська</string>
+
+    <string name="settings_text_en">Text:</string>
+    <string name="settings_text_ru">Текст:</string>
+    <string name="settings_text_uk">Текст:</string>
+    
+    <string name="settings_read_en">Read:</string>
+    <string name="settings_read_ru">Слушаем:</string>
+    <string name="settings_read_uk">Слухаємо:</string>
+    
+    <string name="settings_syllable_en">Syllable:</string>
+    <string name="settings_syllable_ru">По слогам:</string>
+    <string name="settings_syllable_uk">По слогам:</string>
+
+    <string name="settings_music_volume_en">Background music:</string>
+    <string name="settings_music_volume_ru">Фоновая музыка:</string>
+    <string name="settings_music_volume_uk">Фонова музика:</string>
+
+    <string name="settings_voice_volume_en">Text reading:</string>
+    <string name="settings_voice_volume_ru">Чтение текста:</string>
+    <string name="settings_voice_volume_uk">Читання тексту:</string>
+
+    <string name="settings_effects_volume_en">Effects:</string>
+    <string name="settings_effects_volume_ru">Эффекты:</string>
+    <string name="settings_effects_volume_uk">Ефекти:</string>
+
+    <!-- Rabbit Game -->
+
+    <string name="win_clear_en">STAGE CLEARED</string>
+    <string name="win_run_en">RUN TIME 00:</string>
+    <string name="win_best_en">BEST TIME 00:</string>
+
+    <string name="win_clear_ru">УРОВЕНЬ ПРОЙДЕН</string>
+    <string name="win_run_ru">ВРЕМЯ ПОБЕГА 00:</string>
+    <string name="win_best_ru">ЛУЧШЕЕ ВРЕМЯ 00:</string>
+
+    <string name="game_level_en">LEVEL</string>
+    <string name="game_level_ru">УРОВЕНЬ</string>
+
+</resources>

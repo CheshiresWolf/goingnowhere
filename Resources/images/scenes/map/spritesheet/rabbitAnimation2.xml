@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:db99683fbd2175b15f9b3698a7512a1d:98802c982b9dd71c9e5790b0f92741e8:4893bbb95380a4c0fd8e9eb7dffad4a0$ -->
+<Imageset Name="rabbitAnimation2" Imagefile="rabbitAnimation2.png" NativeHorzRes="837" NativeVertRes="169" AutoScaled="false">
+    <Image Name="gameBuf_0000_4" XPos="2" YPos="2" Width="165" Height="165"/>
+    <Image Name="gameBuf_0001_3" XPos="169" YPos="2" Width="165" Height="165"/>
+    <Image Name="gameBuf_0002_2" XPos="336" YPos="2" Width="165" Height="165"/>
+    <Image Name="gameBuf_0003_1" XPos="503" YPos="2" Width="165" Height="165"/>
+    <Image Name="gameBuf_0004_0" XPos="670" YPos="2" Width="165" Height="165"/>
+</Imageset>

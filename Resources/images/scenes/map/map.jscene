@@ -1,0 +1,1 @@
+{	width : 768, height : 1024,	layers : [		{ name : "fon",  left : 0,  top : 0,  width : 768, height : "fill", filename : "fon.png" }	]}
