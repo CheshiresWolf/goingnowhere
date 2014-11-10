@@ -1,1 +1,11 @@
-{	width : 768, height : 1024,	layers : [		{ name : "fon",  left : 0,  top : 0,  width : 768, height : "fill", filename : "fon.png" }	]}
+{
+
+	width  : 1024, height : 768,
+
+	layers : [
+
+		{ name : "background", left : 0, top : 0, width : 1284, height : 1056, filename : "back.png" }
+
+	]
+
+}

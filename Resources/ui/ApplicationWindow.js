@@ -5,9 +5,6 @@ var quicktigame2d   = require("com.ti.game2d");
 var OurBook         = require("/ui/OurBook");
 var InAppPurchases  = require("lib/InAppPurchases");
 var Config          = require("config");
-var GamePicker      = require("ui/GamePicker");
-var LevelManager    = require("modules/LevelManager");
-var SoundManager    = require("modules/SoundManager");
 
 //var GoogleAnalytics = require("analytics.google").getTracker(Config.googleAnalyticsId);
 
@@ -35,8 +32,6 @@ function ApplicationWindow() {
         ],
 
 	});
-
-    LevelManager.load();
 
     var game = quicktigame2d.createGameView({});
     game.registerForMultiTouch();
@@ -143,15 +138,8 @@ function ApplicationWindow() {
                 
         var pageClass = pages[e.index];
         var Page = game.require('/ui/scenes/' + pageClass);
-        page = new Page(game, LevelManager, e, game.scaleX, game.scaleY);
-        Ti.API.debug("ApplicationWindow | pageClass : " + pageClass + " | page.fail : " + page.fail);
-        if (page.fail) {
-            pageClass = "Menu";
-            Page = game.require('/ui/scenes/' + pageClass);
-            page = new Page(game, LevelManager);
-        }
+        page = new Page(game, self, e, game.scaleX, game.scaleY);
         page.name = pageClass;
-        Ti.API.debug("ApplicationWindow | pageClass : " + pageClass + " continue ");
         
         if (firstScene) { 
             firstScene = false;
@@ -432,11 +420,9 @@ function ApplicationWindow() {
 
             if (activity) {
                 activity.addEventListener('resume', function(e) {
-                    SoundManager.play();
                     game.start();
                 });
                 activity.addEventListener('pause', function(e) {
-                    SoundManager.stop();
                     game.stop();
                 });
             }
@@ -446,15 +432,12 @@ function ApplicationWindow() {
         
     } else {
         Ti.App.addEventListener('resumed', function(e) {
-            SoundManager.play();
             game.start();
         });
         Ti.App.addEventListener('pause', function(e) {
-            SoundManager.stop();
             game.stop();
         });
         Ti.App.addEventListener('paused', function(e) {
-            SoundManager.stop();
             game.stop();
         });
     }
@@ -476,70 +459,7 @@ function ApplicationWindow() {
 		pages = InAppPurchases.isFullVersion() ? Config.ALL_PAGES : Config.FREE_PAGES;
         loadPage({ index: InAppPurchases.lastPage });
     });
-    /*
-    Ti.App.addEventListener("trackAboutLink", function(e) {
-        GoogleAnalytics.trackEvent({
-            category : "About",
-            action : "link",
-            label  : "iPublisher link was opened.",
-            value  : 1
-        });
-    });
-
-    Ti.App.addEventListener("trackMoreTales", function(e) {
-        GoogleAnalytics.trackEvent({
-            category : "Logo",
-            action : "link",
-            label  : e.link  + " link was opened.",
-            value  : 1
-        });
-    });
-
-    Ti.App.addEventListener("trackComingSoon", function(e) {
-        GoogleAnalytics.trackEvent({
-            category : "Menu",
-            action : "window",
-            label  : "ComingSoon opened.",
-            value  : 1
-        });
-    });
-
-    Ti.App.addEventListener("trackHelp", function(e) {
-        GoogleAnalytics.trackEvent({
-            category : "Help",
-            action : "window",
-            label  : "Help screen opened.",
-            value  : 1
-        });
-    });
-
-    Ti.App.addEventListener("trackSocial", function(e) {
-        GoogleAnalytics.trackEvent({
-            category : "Social",
-            action : "link",
-            label  : e.social + " link opened.",
-            value  : 1
-        });
-    });
-
-    Ti.App.addEventListener("trackShare", function(e) {
-        GoogleAnalytics.trackEvent({
-            category : "Share",
-            action : "window",
-            label  : "Sharing screen opened.",
-            value  : 1
-        });
-    });
-
-    Ti.App.addEventListener("trackWin", function(e) {
-        GoogleAnalytics.trackEvent({
-            category : "Game",
-            action : "levelFinished",
-            label  : e.index + " level was finished with " + e.score + " carrots.",
-            value  : 1
-        });
-    });
-    */
+   
     self.topScene = function() {
         return currentPage;
     };
