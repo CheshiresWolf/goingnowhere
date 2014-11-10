@@ -19,15 +19,18 @@ function ApplicationWindow() {
 
 		backgroundImage: "/images/scenes/canva.png",
 
-        width:  Config.UI_WIDTH,
-        height: Config.UI_WINDOW_HEIGHT,
+        top  : 0,
+        left : 0,
 
-		fullscreen:   true,
-		hideNavBar:   true,
-		navBarHidden: true,
-		exitOnClose:  true,
+        width  : Config.UI_WIDTH,
+        height : Config.UI_HEIGHT,
 
-		orientationModes: [
+		fullscreen   : true,
+		hideNavBar   : true,
+		navBarHidden : true,
+		exitOnClose  : true,
+
+		orientationModes : [
             Ti.UI.LANDSCAPE_LEFT
         ],
 

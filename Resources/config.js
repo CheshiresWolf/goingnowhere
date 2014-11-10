@@ -7,10 +7,10 @@ var allPages = ["Map"];
 
 // ===== UI size stuff =====
 
-var DESIGNED_WIDTH  = 768;
-var DESIGNED_HEIGHT = 1024;
+var DESIGNED_WIDTH  = 1024;
+var DESIGNED_HEIGHT = 768;
 
-var maxAspectRatio = 768 / 1024;
+var maxAspectRatio = 1024 / 768;
 var uiWidth, uiHeight;
 
 // Calculate uiWidth and uiHeight
@@ -23,7 +23,7 @@ module.exports = {
     APP_ID : "806813956",
     APP_DOMAIN : "ua.com.ipublisher.tales.goingnowhere",
 
-    IAP_PRODUCT_NAME  : "RabbitRun",
+    IAP_PRODUCT_NAME  : "GoingNowhere",
     IAP_SHARED_SECRET : "7d5c7531f97348fc90ecafb49ccf725e",
 
     GIAB_PRODUCT_NAME : "ua.com.ipublisher.tales.goingnowhere",
@@ -108,9 +108,9 @@ module.exports = {
     UI_WIDTH   : uiWidth,
     UI_HEIGHT  : uiHeight,
 
-    UI_TOP_OFFSET : topOffset,
+    //UI_TOP_OFFSET : topOffset,
 
-    UI_WINDOW_HEIGHT : uiHeight + topOffset * 2,
+    //UI_WINDOW_HEIGHT : uiHeight + topOffset * 2,
     
     Globals : {}
 };
@@ -205,15 +205,15 @@ function getOSFamily() {
 
 function calculateUIDimension() {
     var displayCaps = Ti.Platform.displayCaps;
-    var w = Math.min(displayCaps.platformWidth, displayCaps.platformHeight);
+    var w = Math.max(displayCaps.platformWidth, displayCaps.platformHeight);
 
     uiWidth   = w;
-    uiHeight  = (uiWidth * 1024) / 768;
-    topOffset = (displayCaps.platformHeight - uiHeight) / 2;
+    uiHeight  = (uiWidth * 768) / 1024;
+    //topOffset = (displayCaps.platformHeight - uiHeight) / 2;
     
     if (isRetina()) {
     	uiWidth   *= 2;
     	uiHeight  *= 2;
-        topOffset *= 2;
+        //topOffset *= 2;
     }
 }

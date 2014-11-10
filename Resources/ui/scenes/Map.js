@@ -28,17 +28,28 @@ function Map(game, window) {
         window.removeEventListener( 'touchstart', touchstartListener );
     };
 
-    var touchstartPos = {};
+    var tsPos = {};
+    var tsBackPos = {};
     function touchstartListener(e) {
-        touchstartPos.x = e.x;
-        touchstartPos.y = e.y;
+        tsPos.x = e.x;
+        tsPos.y = e.y;
+
+        tsBackPos.x = background.x;
+        tsBackPos.y = background.y;
     }
 
     function touchmoveListener(e) {
-        var x = touchstartPos.x - e.x;
-        var y = touchstartPos.y - e.y;
-        
-        Ti.API.debug("Map | touchmoveListener | s(" + touchstartPos.x + ", " + touchstartPos.y + ") - e(" + e.x + ", " + e.y + ") = (" + x + ", " + y + ")");
+        var newX = tsBackPos.x - ( tsPos.x - e.x );
+        var newY = tsBackPos.y - ( tsPos.y - e.y );
+
+        if ( newX > 0 ) newX = 0;
+        if ( newY > 0 ) newY = 0;
+
+        if ( ( newX + background.width  ) < Config.UI_WIDTH  ) newX = Config.UI_WIDTH  - background.width;
+        if ( ( newY + background.height ) < Config.UI_HEIGHT ) newY = Config.UI_HEIGHT - background.height;
+
+        background.x = newX;
+        background.y = newY;
     }
 
 
