@@ -39,7 +39,9 @@ function Map(game, window) {
 
         window.addEventListener( 'touchmove',  touchmoveListener  );
         window.addEventListener( 'touchstart', touchstartListener );
-    
+
+        //ti-mocha tests
+        testMap();
     });
 
     scene.beforeUnload = function() {
@@ -121,5 +123,15 @@ function Map(game, window) {
 
     return scene;
 }
+
+//====================<Tests>====================
+
+function testMap() {
+    require('tests/ti-mocha');
+
+    require('tests/tests').testMap();
+}
+
+//===================</Tests>====================
 
 module.exports = Map;

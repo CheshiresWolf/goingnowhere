@@ -1,9 +1,0 @@
-{
-    //Adjust the --sdk to your version.
-    "cmd": "/usr/local/bin/titanium build --platform iphone --sdk 3.4.0.GA --log-level debug --target simulator --ios-version 8.1 --device-family iphone --sim-version 8.1 --tall --retina --skip-js-minify --no-colors --no-prompt",
-    //We need to tell which path to use
-    "path": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
-    "shell": true,
-    //Enter the working dir for you app
-    "working_dir": "~/Documents/Titanium_Studio_Workspace/GoingNowhere/"
-}

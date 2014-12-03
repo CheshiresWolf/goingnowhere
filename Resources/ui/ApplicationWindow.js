@@ -2,7 +2,6 @@
 var isAndroid = !!Ti.Android;
 
 var quicktigame2d   = require("com.ti.game2d");
-var OurBook         = require("/ui/OurBook");
 var InAppPurchases  = require("lib/InAppPurchases");
 var Config          = require("config");
 
@@ -352,19 +351,6 @@ function ApplicationWindow() {
         game.scaleY = Config.UI_SCALE_Y;//game.screen.height / 1024;
         game.start();
 
-        var PauseScreen = require("modules/PauseScreen");
-        var WinScreen   = require("modules/WinScreen");
-        var FailScreen  = require("modules/FailScreen");
-        var HelpScreen  = require("modules/HelpScreen");
-        var ComingSoon  = require("modules/ComingSoon");
-        game.uiScreen = {
-            pause : new PauseScreen(game, self),
-            win   : new WinScreen(game, self),
-            fail  : new FailScreen(game, self),
-            help  : new HelpScreen(game, self),
-            comingSoon : new ComingSoon(game, self)
-        };
-
         Ti.App.fireEvent("goToPage", {index:lastPage, first: true});
     });
 
@@ -379,40 +365,18 @@ function ApplicationWindow() {
         visible: false,
         zIndex: 1000
     });
-
-    var loadingImageView = Titanium.UI.createImageView({
-    	images: [ 0, 1, 2, 3, 4 ].map(function(i) {
-            return "/images/loadingAnimation/" + i + ".png"
-        }),
-    	duration: 250,
-        width:  157 * Config.UI_SCALE_X,
-        height: 200 * Config.UI_SCALE_Y
-	});
     
     self.showLoadingAnimation = function(dur, start) {
         //Ti.API.info('SHOW LOADING ANIMATION');
         dur = dur || 800;
         over.show();
-        over.animate(
-            {
-                opacity : 1,
-                duration : 200
-            },
-            function() {
-                if (start) {
-                    game.show();
-                }
-            }
-        );
-        loadingImageView.stop();
-        loadingImageView.start();
     };
     self.hideLoadingAnimation = function(dur, start) {
         //Ti.API.info('HIDE LOADING ANIMATION');
         setTimeout(function(){
             over.hide();
-            over.opacity = 1;
          }, 200);
+
          return;
     };
     if (isAndroid) {

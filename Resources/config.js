@@ -1,5 +1,3 @@
-var _ = require("/lib/Underscore");
-
 var lastFreePage = 1;
 var talePagesAmount = 1;
 
@@ -58,27 +56,6 @@ module.exports = {
             lang = this.DEFAULT_LANGUAGE;
         }
         return lang;
-    },
-
-    // see TextLayout for more info
-    COMMON_STORY_TEXT_SETTINGS : {
-
-        font : "Gabriola",
-        fontSize : 30,
-        initialFont : "Gabriola",
-        initialFontSize : 44,
-
-        align : "auto",
-
-        useInitial : true,
-        dynamicSize : true,
-
-        padding : 25,
-        paddingLeft : 25,
-        paddingTop : 30,
-
-        sizing : "wrapper"
-
     },
 
     HAS_GAMES : false,
@@ -194,8 +171,6 @@ function getDeviceType() {
 
     return Ti.Platform.osname === "ipad" || retina ? "tablet" : "phone";
 }
-
-
 
 function getOSFamily() {
     var osname = Ti.Platform.osname;

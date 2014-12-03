@@ -1,11 +1,8 @@
 var _      = require("/lib/Underscore");
 var game2d = require("com.ti.game2d");
-var Frame  = require("ui/sprites/Frame");
 var JScene = require("/ui/JScene");
 var Config = require("config");
 var Utils  = require("/ui/JScene/Utils");
-// var BounceAnimation   = require("modules/AnimationHelper").BounceAnimation;
-// var CoordinatesHelper = require("/modules/CoordinatesHelper");
 
 
 var isTablet = Ti.Platform.osname == "ipad";
@@ -24,8 +21,6 @@ function applyProperties(obj, props) {
 
 
 function LoadableScene(game, fname, basepath, no_menu) {
-
-    var TextLayout = game.require("/ui/TextLayout");
 
     // scene data
     var data; 
@@ -143,14 +138,6 @@ function LoadableScene(game, fname, basepath, no_menu) {
             //scene.pageMode = "record";
         } else if (Config.Globals.startReplay) {
            // scene.pageMode = "replay";
-        } else {
-            scene.textLayout = data.textLayout;
-            scene.setupText();
-            if (scene.tl) {
-                scene.pageMode = "normal";
-            } else {
-                scene.pageMode = "no_text";
-            }
         }
 
         if (scene.data.gameData) {
@@ -338,21 +325,6 @@ function LoadableScene(game, fname, basepath, no_menu) {
 
             } else
 
-            if (l.frame) {
-                
-                baseParams.filename = Utils.normalize(basepath + l.frame);
-                baseParams.left = baseParams.x;
-                baseParams.top  = baseParams.y;
-
-                baseParams = _.omit(baseParams,
-                    "image", "x", "y",
-                    "angle", "draggable", "alpha"
-                );
-
-                sprite = new Frame(scene, baseParams).view;
-
-            } else 
-
             if (l.childrens) {
 
                 sprite = game2d.createSprite(baseParams);
@@ -495,21 +467,6 @@ function LoadableScene(game, fname, basepath, no_menu) {
                     scaleY: scene.scaleY
                 });
 
-            } else
-
-            if (l.frame) {
-
-                baseParams.filename = Utils.normalize(basepath + l.frame);
-                baseParams.left = baseParams.x;
-                baseParams.top  = baseParams.y;
-                
-                baseParams = _.omit(baseParams,
-                    "image", "x", "y",
-                    "angle", "draggable", "alpha"
-                );
-
-                child = new Frame(scene, baseParams).view;
-
             } else {
 
                 hash[Utils.normalize(basepath + l.filename)] = true;
@@ -645,21 +602,6 @@ function LoadableScene(game, fname, basepath, no_menu) {
                     scaleX: scene.scaleX,
                     scaleY: scene.scaleY
                 });
-
-            } else
-
-            if (l.frame) {
-
-                baseParams.filename = Utils.normalize(basepath + l.frame);
-                baseParams.left = baseParams.x;
-                baseParams.top  = baseParams.y;
-                
-                baseParams = _.omit(baseParams,
-                    "image", "x", "y",
-                    "angle", "draggable", "alpha"
-                );
-
-                child = new Frame(scene, baseParams).view;
 
             } else {
 
@@ -913,37 +855,6 @@ function LoadableScene(game, fname, basepath, no_menu) {
         game.addEventListener("touchcancel", scene.onTouchEnd);
         game.addEventListener("touchcancel_pointer", scene.onTouchEnd);
         
-        function reflow(){ 
-            if (scene.tl) {
-                var sprite = scene.textHolder();
-                sprite.clearTransforms();
-                if (scene.tl.reflowWords()) {
-                    //scene.setTimeout( function() {
-                        var closer = scene.spriteByName(scene.textLayout.closer);
-                        if (closer) {
-                            sprite.addTransformChildWithRelativePosition(closer);
-                            
-                        }
-                        if (Ti.Android) {
-                            sprite.addTransformChildWithRelativePositionBatch(scene.tl.getSprites());
-                        } else {
-                            sprite.addTransformChildWithRelativePosition(scene.tl.getSprites());
-                        }
-                        sprite.transform(scene.createTransform({x:sprite.x, y:sprite.y, duration:100}));
-                        scene.prepareReading();
-                        //scene.startTextReading();
-                        scene.startTextReading();
-                        scene.textReady = true;
-                    //}, 200);
-                } else {
-                    setTimeout(reflow, 100);            
-                }
-                
-            } 
-        }
-        //scene.setTimeout(reflow, 500);
-        reflow(); 
-        
         scene.started = true;
         scene.showArrows();
         scene.showTopMenu(1000);
@@ -1065,65 +976,6 @@ function LoadableScene(game, fname, basepath, no_menu) {
         }
     }; 
     
-    scene.textHolder = function() {
-        // return scene.spriteByName(scene.textLayout.holder);
-        return (scene.tl) ? scene.tl.wrapper.view : null;
-    };
-    
-    var hideTextTransform = scene.createTransform({duration: 100, alpha:0});
-    scene.hideText = function(){
-        var sprite = scene.textHolder();
-        if (sprite && hideTextTransform) {
-            sprite.transform(hideTextTransform);
-            Ti.App.Properties.setBool("show_text", false);
-            // scene.updateButtons();
-        }
-
-    };
-        
-    scene.onClick_close_text = function(e){
-        scene.hideText();
-        scene.playSound("menu");
-    };
-    
-    scene.setupText = function(sprites) {
-        if (scene.textLayout) {
-            scene.tl = new TextLayout(scene);
-            wordSprites = scene.tl.drawText();
-            //
-        }
-    };
-    
-    scene.prepareReading = function() {
-        if (!readSound && scene.tl) {
-            readSound = Ti.Media.createSound({url:scene.readSoundFile});
-            readSound.addEventListener("complete", scene.soundComplete);
-            wordIntervals = scene.wordIntervals;
-            stopAt = -1;        
-        }
-    };
-    
-    scene.startTextReading = function() {
-        if (!scene.textLayout) return;
-        stopAt = -1;
-        if ( Ti.App.Properties.getBool("show_text", isTablet) ) {
-            scene.showText();
-        }
-        if (Ti.App.Properties.getString("read_mode", "read") == "listen") {
-            scene.setTimeout(function() {
-                scene.playTextSound();
-                scene.setTimeout(scene.updateButtons, 500);
-            }, 2000);
-            /*if (scene.soundReadingTimeoutID == -1) {
-                scene.soundReadingTimeoutID = scene.setTimeout(function() {
-                    scene.soundReadingTimeoutID = -1;
-                    scene.playTextSound();
-                    scene.setTimeout(scene.updateButtons, 500);
-                },2000);
-            }*/
-        }        
-    };
-    
     var listeningEnterframe = 0;
     scene.startEnterframe = function() {
         if (!listeningEnterframe) {
@@ -1141,143 +993,6 @@ function LoadableScene(game, fname, basepath, no_menu) {
         }
     };
     
-    var readSound = null;
-    var playingTimer;
-    var currentWord = -1; 
-    var wordReading = false;
-    var readSoundPaused = true;
-    scene.pauseSound = function() {
-        if (readSound) {
-            scene.stopEnterframe();
-            readSound.pause();
-            readSoundPaused = true;
-        }
-    };
-    scene.setReadSoundVolume = function(v) {
-        if (readSound) readSound.volume = v;
-    };
-    scene.onFrame = function(e) {
-        if (!scene.textLayout) return;
-        //Ti.API.info(e.delta+ " " +  e.uptime);
-        var rst = 0;
-        if (!readSoundPaused && readSound && readSound.playing && (rst = readSound.time)) {
-            if (stopAt > 0 && rst/1000 >= stopAt) {
-                readSound.pause();
-                readSoundPaused = true;
-                scene.stopEnterframe();
-                scene.updatePlayButtons({play: false});
-            } else {
-                var cw = getSpriteIndexOnTime(rst/1000);//XXX
-                if (cw != -1 && cw != currentWord) {
-                    var sprite = scene.wordSpriteByIndex(cw);
-                    if (sprite) {
-                        sprite.clearTransforms();
-                        // Modify: Drag text changes
-                        sprite.y = sprite.draggable ? sprite.draggableY : sprite.baseY;
-                        sprite.x = sprite.draggable ? sprite.draggableX : sprite.baseX;
-                        // if (!sprite.draggable) { 
-                        //     if (scene.scaleX !== scene.scaleY) {
-                        //         sprite.scaleFromCenter(1, scene.scaleY / scene.scaleX, 0, 0);
-                        //     } 
-                        // }
-                        sprite.transform(scene.createTransform({
-                            duration: 300,
-                            y: sprite.y - 10 * game.scaleY * (sprite.draggable ? 2 : 1),
-                            autoreverse: true
-                        }));
-                    }
-                    currentWord = cw;
-                } 
-            }            
-        }
-    };
-    
-    
-    function getSpriteIndexOnTime(time) {
-        for(var i=0,j=wordIntervals.length; i<j; i++){
-            var w = wordIntervals[i];
-            if (time >= parseFloat(w[0]) && time < parseFloat(w[1])) {
-                return i;
-            }
-        };
-        return -1;
-    }
-    var wordSound;
-    var wordPlayingTimer;
-    var stopAt = -1;
-    scene.onClickWord = function(e) {
-        scene.startEnterframe();
-        currentWord = -1;
-        if (wordPlayingTimer) clearTimeout(wordPlayingTimer);
-        readSound.pause();
-        readSoundPaused = true;
-        var word = wordIntervals[e.source.wordIndex];
-        //Ti.API.info(parseFloat(word[0]));
-        readSound.time = parseFloat(word[0]) * 1000;
-        //MODIFY: DRAG TEXT CHANGES
-        stopAt =  e.source.draggable ? parseFloat(word[1]) : -1;
-        //stopAt =  parseFloat(word[1]);
-        readSound.volume = Ti.App.Properties.getDouble("read_volume", 1);
-        readSound.play();
-        readSoundPaused = false; 
-        game.updatePlayButtons({play: true});
-    };
-    scene.soundComplete = function (e) {
-        scene.stopEnterframe();
-        game.updatePlayButtons({play: false, onlyVisual: true});
-    };
-        
-    var wordIntervals = [];
-    scene.playTextSound = function() {//XXX
-        if (readSound) {
-            scene.startEnterframe();
-            readSound.volume = Ti.App.Properties.getDouble("read_volume", 1);
-            readSound.play();
-            readSoundPaused = false;
-        }
-    };
-    /*scene.pauseTextSound = function() {
-        if (readSound) {
-            if (scene.soundReadingTimeoutID != -1) {
-                scene.clearTimeout(scene.soundReadingTimeoutID);
-                scene.soundReadingTimeoutID = -1;
-            }
-            scene.stopEnterframe();
-            readSound.pause();
-            scene.updatePlayButtons({stop:1});
-        }
-        
-    };*/
-    /*
-     * SOUND FACTORY
-     */
-    var showTextTransform = scene.createTransform({duration: 100, alpha:1});
-    scene.showText = function() {
-        if (!scene.textLayout) return;
-            var sprite = scene.textHolder();//scene.spriteByName(scene.textLayout.holder);
-            if (sprite && sprite.alpha == 0) {
-                sprite.transform(showTextTransform);
-        }
-    }
-    scene.clickRead = function(e){
-        if (!scene.textLayout) return;
-        if (!scene.textReady) return;
-        stopAt = -1;
-        //if (Ti.App.Properties.getBool("show_text", isTablet)) {
-        //    scene.showText();
-        //}
-        scene.playTextSound();
-        game.updatePlayButtons({play: true});
-    }
-    scene.clickPause = function(e){
-        if (readSound) {
-            scene.stopEnterframe();
-            readSound.pause();
-            readSoundPaused = true;
-            game.updatePlayButtons({play: false});
-            
-        }
-    }
     var sounds = {};
     var freeSoundTimer; 
     scene.stopSound = function(name) {
@@ -1376,41 +1091,8 @@ function LoadableScene(game, fname, basepath, no_menu) {
         if (ar) ar.show();
     };
     
-    /*
-     * SHAKE GESTURE GAME
-     */
-    //MODIFY: DRAG TEXT CHANGES
-    //var ShuffleWordsGame = require('modules/ShuffleWordsGame');
-    //Ti.API.info(ShuffleWordsGame);
-    //scene.onShake = function(e){
-        //Ti.API.info(e);
-        //ShuffleWordsGame(scene);
-    //};
-    
-     scene.moveTextSpriteToPlace = function(name){
-        if (draggedSprites[name]) {
-            var s = draggedSprites[name];
-            s.transform(scene.createTransform({scaleX:1, scaleY:1, x:s.baseX, y:s.baseY, duration:500, easing:game2d.ANIMATION_CURVE_BACK_OUT}));
-            s.fontSize = s.defaultFontSize;
-            s.draggable = false;
-            s.dragged = false;
-            scene.playSound("glass");
-            draggedSprites[name] = null;
-            delete dragOffsets[name];
-            wordsOutOfPlace--;
-        }
-    };
-    
-    scene.getSprites = function() {return sprites;};
-
-    scene.showHideText = function() {
-        var show_text = Ti.App.Properties.getBool("show_text", isTablet);
-        if (show_text) {
-            scene.showText();
-        } else {
-            scene.hideText();
-        }
-
+    scene.getSprites = function() {
+        return sprites;
     };
 
     return scene;    

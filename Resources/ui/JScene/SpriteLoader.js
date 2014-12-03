@@ -16,7 +16,6 @@ module.exports = {
             scene.scaleY = game.scaleY;
             data = getJsonData(fname);
 
-            scene.textLayout = data.textLayout;
             scene.setupText();
 
             var names = {};
