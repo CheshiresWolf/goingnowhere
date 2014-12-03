@@ -1020,6 +1020,10 @@ function LoadableScene(game, fname, basepath, no_menu) {
             <object> // sound object
      */
     scene.playSound = function(name, volume) {
+        //only for testing
+        return;
+
+
         if (scene.MUTE) return;
 
         var lname = L(scene.lang+"_"+name, "non_i18n_sound");

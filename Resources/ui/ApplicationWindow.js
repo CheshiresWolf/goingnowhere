@@ -121,10 +121,11 @@ function ApplicationWindow() {
     };
     
     
-    var flipSound = Ti.Media.createSound({url:"/sounds/page_flip.mp3"});
+    //var flipSound = Ti.Media.createSound({url:"/sounds/page_flip.mp3"});
     function playFlipSound() {
-    	flipSound.volume = Ti.App.Properties.getDouble("effects_sound", 0.6);
-    	flipSound.play();
+        return;
+    	//flipSound.volume = Ti.App.Properties.getDouble("effects_sound", 0.6);
+    	//flipSound.play();
     }
 
     var page = null;
@@ -359,18 +360,29 @@ function ApplicationWindow() {
     game.window = self;
     
     var over = Ti.UI.createView({
-        backgroundColor: "white",
-        backgroundImage: "/images/scenes/canva.png",
-        opacity: 0,
-        visible: false,
-        zIndex: 1000
+        backgroundColor : "white",
+        backgroundImage : "/images/scenes/canva.png",
+        opacity : 0,
+        visible : false,
+        zIndex  : 1000
+
     });
+    over.hide();
     
     self.showLoadingAnimation = function(dur, start) {
         //Ti.API.info('SHOW LOADING ANIMATION');
         dur = dur || 800;
         over.show();
+        over.animate({
+            opacity : 1,
+            duration : 200
+        }, function() {
+            if (start) {
+                game.show();
+            }
+        });
     };
+
     self.hideLoadingAnimation = function(dur, start) {
         //Ti.API.info('HIDE LOADING ANIMATION');
         setTimeout(function(){
@@ -444,7 +456,6 @@ function ApplicationWindow() {
     }
     
     //self.add(navigation);
-    over.add(loadingImageView);
     self.add(over);
 
 

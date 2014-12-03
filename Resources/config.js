@@ -33,7 +33,7 @@ module.exports = {
     
     // make sure it's false for release
     // TEST_PURCHASES: true && Ti.App.deployType !== "production",
-    TEST_VERSION : false,
+    TEST_VERSION : true,
     PAID_VERSION : true,
 
     FPS : getFPS(),

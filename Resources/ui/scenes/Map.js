@@ -40,8 +40,25 @@ function Map(game, window) {
         window.addEventListener( 'touchmove',  touchmoveListener  );
         window.addEventListener( 'touchstart', touchstartListener );
 
+        var pointer = quicktigame2d.createSprite({
+            x : 100 * game.scaleX,
+            y : 100 * game.scaleY,
+            z : 2,
+            width  : 40 * game.scaleX,
+            height : 40 * game.scaleY,
+            image  : "images/scenes/map/pointer.png"
+        });
+        background.addChildNode(pointer);
+        scene.add(pointer);
+
+        pointer.color(0.5, 1, 0.5);
+
         //ti-mocha tests
-        testMap();
+        if (Config.TEST_VERSION) testMap({
+            self : this,
+            background : background,
+            pointer : pointer
+        });
     });
 
     scene.beforeUnload = function() {
@@ -116,20 +133,23 @@ function Map(game, window) {
         }
 
         scene.addBatch(bufArray);
+        //scene.add(background);
+        Ti.API.debug("Map.js | drawMap | map drawing finished.");
     }
 
     //===================</Draw>====================
-
 
     return scene;
 }
 
 //====================<Tests>====================
 
-function testMap() {
+function testMap(opts) {
+    Ti.API.debug("Map.js | start testing");
+
     require('tests/ti-mocha');
 
-    require('tests/tests').testMap();
+    require('tests/tests').testMap(opts);
 }
 
 //===================</Tests>====================

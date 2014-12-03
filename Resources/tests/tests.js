@@ -3,12 +3,22 @@ var should = require("tests/should");
 function Test() {
 	var self = this;
 
-	self.testMap = function() {
+	self.testMap = function(opts) {
 		describe('Map.js', function () {
-			it('must exists.', function () {
-				var Map = require("ui/scenes/Map");
+			it('must exists and', function () {
+				should.exists(opts.self);
+			});
+			it('background are created.', function () {
+				should.exists(opts.background);
+			});
+		});
 
-				should.exists(Map);
+		describe("Pointer", function() {
+			it("must exists and", function() {
+				should.exists(opts.pointer);
+			});
+			it("its zIndex must be 2.", function() {
+				(opts.pointer.z).should.be.exactly(2);
 			});
 		});
 
