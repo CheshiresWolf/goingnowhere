@@ -351,6 +351,20 @@ function LoadableScene(game, fname, basepath, no_menu) {
 
                 sprite = new Frame(scene, baseParams).view;
 
+            } else 
+
+            if (l.childrens) {
+
+                sprite = game2d.createSprite(baseParams);
+                scene.add(sprite);
+                l.childNames = [];
+                names = scene.loadChildrens(sprite, l, names);
+                sprite.transform(scene.createTransform({
+                    x: baseParams.x, 
+                    y: baseParams.y,
+                    angle: baseParams.angle
+                }));
+
             } else {
 
                 // regular sprite
@@ -372,7 +386,150 @@ function LoadableScene(game, fname, basepath, no_menu) {
         return names;
     };
     
+    scene.loadChildrens = function(parentSprite, parentData, hash) {
 
+        var childsArray = [];
+            
+        for (var i in parentData.childrens) {
+
+            var l = parentData.childrens[i];
+
+            Ti.API.debug("LoadableScene | scene.loadChildrens | l : ", l);
+            
+            // Language sprite filtering
+            if (l.name.match(/_[a-z]+_lang$/)) {
+                var lngSprite = l.name.match(/_([a-z]+)_lang$/)[1];
+                if (scene.lang != lngSprite) {
+                    continue;
+                }
+            }
+            
+            // Type and platform sprite filtering
+            if (
+                (l.platform && (
+                    ( scene.android && (l.platform === "ios"    )) ||
+                    (!scene.android && (l.platform === "android"))
+                )) ||
+                (l.type && (
+                    ( scene.tablet && (l.type === "phone" )) ||
+                    (!scene.tablet && (l.type === "tablet"))
+                ))
+            ) {
+                continue;
+            }
+
+            // Parse values and scale them
+            if (l.left != undefined) {
+                l.left = parseInt(l.left, 0) * scene.scaleX;
+            }
+            if (l.top != undefined) {
+                l.top = parseInt(l.top, 0) * scene.scaleY;
+            }
+
+            l.width  = parseInt(l.width, 0) * scene.scaleX; 
+            l.height = parseInt(l.height,0) * scene.scaleY;
+
+            if (l.right != undefined) {
+                l.left = parseInt(parentData.width - l.right * scene.scaleX - l.width, 0);
+            }
+
+            if (l.bottom != undefined) {
+                l.top = parseInt(parentData.height - l.bottom * scene.scaleY - l.height, 0);
+            }
+
+            if (l.dragStartSound && !l.tapSound) {
+                l.tapSound = l.dragStartSound;
+            }
+
+            var sprite;
+
+            l.no_easing = true;
+            
+            if (!l.name_given) {
+                l.name = parentData.name + "_" + l.name;
+                l.name_given = true;
+            }
+            
+            //name of parent subSprite
+            l.parent_name = parentData.name;
+            
+            var localAlpha = 1;
+            if (l.alpha != undefined) {
+                localAlpha = l.alpha;
+            }
+            if (l.hidden != undefined) {
+                localAlpha = l.hidden ? 0 : 1;
+            }
+
+            var child;
+
+            var baseParams = {
+                x : l.left,
+                y : l.top,
+                width  : l.width,
+                height : l.height,
+                angle : l.angle || 0,
+                image : Utils.normalize(basepath + l.filename),
+                alpha : localAlpha,
+                loadedData : l,
+                tag   : l.name,
+                child : true,
+                parentX : parentData.left,
+                parentY : parentData.top
+            };
+
+            !isNaN(parentData.zIndex) && (baseParams.z = parentData.zIndex);
+            !isNaN(l.zIndex)          && (baseParams.z = l.zIndex);
+            !isNaN(l.centerX)         && (baseParams.centerX = l.centerX * scene.scaleX);
+            !isNaN(l.centerY)         && (baseParams.centerY = l.centerY * scene.scaleY);
+
+            if (l.sheet) {
+
+                baseParams.width  /= scene.scaleX;
+                baseParams.height /= scene.scaleY;
+
+                child = game2d.createSpriteSheet(baseParams);
+                applyProperties(child, {
+                    anchorPoint: { x : 0, y : 0 },
+                    scaleX: scene.scaleX,
+                    scaleY: scene.scaleY
+                });
+
+            } else
+
+            if (l.frame) {
+
+                baseParams.filename = Utils.normalize(basepath + l.frame);
+                baseParams.left = baseParams.x;
+                baseParams.top  = baseParams.y;
+                
+                baseParams = _.omit(baseParams,
+                    "image", "x", "y",
+                    "angle", "draggable", "alpha"
+                );
+
+                child = new Frame(scene, baseParams).view;
+
+            } else {
+
+                hash[Utils.normalize(basepath + l.filename)] = true;
+                child = game2d.createSprite(baseParams);
+
+            }
+
+            sprites[l.name] = child;
+
+            parentSprite.addChildNode(child);
+            childsArray.push(child);
+
+        };  
+        
+        scene.scene.addBatch(childsArray);
+
+        childsArray = null;  
+        return hash;
+
+    };
 
     scene.loadSubSprites = function(parentSprite, parentData, zIndex, hash, px, py) {
 

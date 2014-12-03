@@ -8,8 +8,6 @@ var Config          = require("config");
 
 //var GoogleAnalytics = require("analytics.google").getTracker(Config.googleAnalyticsId);
 
-
-
 function ApplicationWindow() {
 
     Titanium.Media.audioSessionMode = Ti.Media.AUDIO_SESSION_MODE_AMBIENT;
@@ -39,7 +37,7 @@ function ApplicationWindow() {
     var game = quicktigame2d.createGameView({});
     game.registerForMultiTouch();
     game.correctionHint = quicktigame2d.OPENGL_FASTEST;
-    game.textureFilter = quicktigame2d.OPENGL_LINEAR;
+    game.textureFilter  = quicktigame2d.OPENGL_LINEAR;
     game.loadTexture("images/scenes/canva.png");
    
     game.require = function (moduleClass) {

@@ -60,10 +60,8 @@
         <target device="iphone">true</target>
         <target device="mobileweb">false</target>
     </deployment-targets>
-    <sdk-version>3.4.0.GA</sdk-version>
+    <sdk-version>3.4.1.GA</sdk-version>
     <modules>
-        <module platform="iphone" version="1.0">analytics.google</module>
-        <module platform="iphone">com.0x82.social</module>
         <module platform="iphone">com.ti.game2d</module>
         <module platform="android">com.ti.game2d</module>
     </modules>
