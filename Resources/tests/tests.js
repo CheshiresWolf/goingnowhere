@@ -17,9 +17,6 @@ function Test() {
 			it("must exists and", function() {
 				should.exists(opts.pointer);
 			});
-			it("its zIndex must be 2.", function() {
-				(opts.pointer.z).should.be.exactly(2);
-			});
 		});
 
 		// run the tests

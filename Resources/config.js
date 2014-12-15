@@ -77,8 +77,9 @@ module.exports = {
     facebook_url : "https://www.facebook.com/runrabbitrunapp",
 
     MUSIC_PLAYLIST : [],
-
+    
     IS_RETINA : isRetina(),
+    IS_RETINA_HD : isRetinaHD(),
 
     UI_SCALE_X : uiWidth  / DESIGNED_WIDTH,
     UI_SCALE_Y : uiHeight / DESIGNED_HEIGHT,
@@ -142,14 +143,27 @@ function getFPS() {
     
 }
 
+
 function isRetina() {
     if (!!Ti.Android) {
         return false;
     }
 
-	var dpi = Ti.Platform.displayCaps.dpi;
-	var osname = Ti.Platform.osname; 
-    return dpi > 163 && (osname == 'ipad' || osname == 'iphone');  
+    var dpi = Ti.Platform.displayCaps.dpi;
+    var osname = Ti.Platform.osname;
+
+    return dpi > 163 && dpi < 400 && (osname == 'ipad' || osname == 'iphone');  
+};
+
+function isRetinaHD() {
+    if (!!Ti.Android) {
+        return false;
+    }
+
+    var dpi = Ti.Platform.displayCaps.dpi;
+    var osname = Ti.Platform.osname;
+    
+    return dpi > 400 && (osname == 'ipad' || osname == 'iphone');  
 };
 
 function getDeviceType() {

@@ -22,12 +22,84 @@ function Map(game, window) {
             height : 4
         },
         blockSize  : {
-            width  : 300,
-            height : 300
+            width  : 450,
+            height : 450
         },
         spriteNames : ["1.png", "2.png", "3.png", "4.png", "5.png", "6.png", "7.png", "8.png", "9.png", "10.png", "11.png", "12.png", "13.png", "14.png", "15.png", "16.png"],
         folderPath  : "images/scenes/map/"
     }
+
+    var pointers = [
+        {
+            name : "Persival Green",
+            sprite : null,
+            fraction : "green",
+            opts : {
+                x : 100,
+                y : 100,
+                r : 0.5,
+                g : 1,
+                b : 0.5
+            }
+        },
+        {
+            name : "Baron Red",
+            sprite : null,
+            fraction : "red",
+            opts : {
+                x : 700,
+                y : 700,
+                r : 1,
+                g : 0.5,
+                b : 0.5
+            }
+        },
+        {
+            name : "Sir Blue",
+            sprite : null,
+            fraction : "blue",
+            opts : {
+                x : 720,
+                y : 300,
+                r : 0.5,
+                g : 0.5,
+                b : 1
+            }
+        }
+    ];
+
+    var towns = [
+        {
+            name : "Green Lake",
+            sprite : null,
+            fraction : "green",
+            opts : {
+                x : 50,
+                y : 100,
+                image : "castle.png"
+            }
+        },
+        {
+            name : "Red Mountain",
+            sprite : null,
+            fraction : "red",
+            opts : {
+                x : 730,
+                y : 720,
+                image : "castle.png"
+            }
+        },
+        {
+            name : "HiddenGard",
+            sprite : null,
+            fraction : null,
+            opts : {
+                x : 300,
+                y : 700,
+                image : "castle.png"
+            }
+        }
+    ];
 
     drawMap();
 
@@ -40,24 +112,19 @@ function Map(game, window) {
         window.addEventListener( 'touchmove',  touchmoveListener  );
         window.addEventListener( 'touchstart', touchstartListener );
 
-        var pointer = quicktigame2d.createSprite({
-            x : 100 * game.scaleX,
-            y : 100 * game.scaleY,
-            z : 2,
-            width  : 40 * game.scaleX,
-            height : 40 * game.scaleY,
-            image  : "images/scenes/map/pointer.png"
-        });
-        background.addChildNode(pointer);
-        scene.add(pointer);
+        for (var i in pointers) {
+            drawPointers(pointers[i]);
+        }
 
-        pointer.color(0.5, 1, 0.5);
+        for (var i in towns) {
+            drawTown(towns[i]);
+        }
 
         //ti-mocha tests
         if (Config.TEST_VERSION) testMap({
             self : this,
             background : background,
-            pointer : pointer
+            pointer : pointers.length
         });
     });
 
@@ -69,16 +136,16 @@ function Map(game, window) {
     var tsPos = {};
     var tsBackPos = {};
     function touchstartListener(e) {
-        tsPos.x = e.x;
-        tsPos.y = e.y;
+        tsPos.x = getLocal(e.x);
+        tsPos.y = getLocal(e.y);
 
         tsBackPos.x = background.x;
         tsBackPos.y = background.y;
     }
 
     function touchmoveListener(e) {
-        var newX = tsBackPos.x - ( tsPos.x - e.x );
-        var newY = tsBackPos.y - ( tsPos.y - e.y );
+        var newX = tsBackPos.x - ( tsPos.x - getLocal(e.x) );
+        var newY = tsBackPos.y - ( tsPos.y - getLocal(e.y) );
 
         
         if ( newX > 0 ) newX = 0;
@@ -137,7 +204,72 @@ function Map(game, window) {
         Ti.API.debug("Map.js | drawMap | map drawing finished.");
     }
 
+    function drawPointers(pointerObj) {
+        var pointer = quicktigame2d.createSprite({
+            x : pointerObj.opts.x * game.scaleX,
+            y : pointerObj.opts.y * game.scaleY,
+            z : 2,
+            width  : 40 * game.scaleX,
+            height : 40 * game.scaleY,
+            image  : "images/scenes/map/pointer.png"
+        });
+        background.addChildNode(pointer);
+        scene.add(pointer);
+
+        //pointer.color(pointerObj.opts.r, pointerObj.opts.g, pointerObj.opts.b);
+        setColor(pointer, pointerObj.fraction);
+
+        pointerObj.sprite = pointer;
+    }
+
+    function drawTown(townObj) {
+        var town = quicktigame2d.createSprite({
+            x : townObj.opts.x * game.scaleX,
+            y : townObj.opts.y * game.scaleY,
+            z : 2,
+            width  : 50 * game.scaleX,
+            height : 50 * game.scaleY,
+            image  : "images/scenes/map/" + townObj.opts.image
+        });
+        background.addChildNode(town);
+        scene.add(town);
+
+        //pointer.color(pointerObj.opts.r, pointerObj.opts.g, pointerObj.opts.b);
+        setColor(town, townObj.fraction);
+
+        townObj.sprite = town;
+    }
+
     //===================</Draw>====================
+
+    //====================<Utils>====================
+
+    function getLocal(x) {
+        if (Config.IS_RETINA)    x *= 2;
+        if (Config.IS_RETINA_HD) x *= 3;
+
+        return x;
+    }
+
+    function setColor(sprite, fraction) {
+        if (fraction == null) {
+            sprite.color(1, 1, 1);
+        } else {
+            switch (fraction) {
+                case "red" :
+                    sprite.color(1, 0.5, 0.5);
+                    break;
+                case "green" :
+                    sprite.color(0.5, 1, 0.5);
+                    break;
+                case "blue" :
+                    sprite.color(0.5, 0.5, 1);
+                    break;
+            }
+        }
+    }
+
+    //===================</Utils>====================
 
     return scene;
 }
