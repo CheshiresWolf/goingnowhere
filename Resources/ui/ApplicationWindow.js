@@ -19,7 +19,7 @@ function ApplicationWindow() {
         top  : 0,
         left : 0,
 
-        width  : Config.UI_WIDTH,
+        width  : Config.UI_WIDTH,//Config.UI_WINDOW_WIDTH,
         height : Config.UI_HEIGHT,
 
 		fullscreen   : true,
@@ -348,8 +348,17 @@ function ApplicationWindow() {
         self.showLoadingAnimation(1500, 1);
     });
     game.addEventListener('onload', function(e) {
-        game.scaleX = Config.UI_SCALE_X;//game.screen.width / 768;
-        game.scaleY = Config.UI_SCALE_Y;//game.screen.height / 1024;
+        game.scaleX = Config.UI_SCALE_Y;
+        game.scaleY = Config.UI_SCALE_Y;
+/*
+        if (Config.IS_RETINA) {
+            game.scaleX /= 2;
+            game.scaleY /= 2;
+        }
+        if (Config.IS_RETINA_HD) {
+            game.scaleX /= 3;
+            game.scaleY /= 3;
+        }*/
         game.start();
 
         Ti.App.fireEvent("goToPage", {index:lastPage, first: true});

@@ -1,8 +1,8 @@
 var lastFreePage = 1;
 var talePagesAmount = 1;
 
-var allPages = ["Map"];
 
+var allPages = ["Dungeon", "Map"];
 // ===== UI size stuff =====
 
 var DESIGNED_WIDTH  = 1024;
@@ -10,6 +10,7 @@ var DESIGNED_HEIGHT = 768;
 
 var maxAspectRatio = 1024 / 768;
 var uiWidth, uiHeight;
+var topOffset, leftOffset;
 
 // Calculate uiWidth and uiHeight
 calculateUIDimension();
@@ -81,14 +82,18 @@ module.exports = {
     IS_RETINA : isRetina(),
     IS_RETINA_HD : isRetinaHD(),
 
-    UI_SCALE_X : uiWidth  / DESIGNED_WIDTH,
-    UI_SCALE_Y : uiHeight / DESIGNED_HEIGHT,
+    UI_SCALE_X : ( (uiWidth + leftOffset * 2)  / DESIGNED_WIDTH  ),
+    UI_SCALE_Y : ( uiHeight / DESIGNED_HEIGHT ),
     UI_WIDTH   : uiWidth,
     UI_HEIGHT  : uiHeight,
 
-    //UI_TOP_OFFSET : topOffset,
+    UI_TOP_OFFSET  : topOffset,
+    UI_LEFT_OFFSET : leftOffset,
 
-    //UI_WINDOW_HEIGHT : uiHeight + topOffset * 2,
+    UI_WINDOW_HEIGHT : uiHeight,
+    UI_WINDOW_WIDTH  : uiWidth + leftOffset * 2,
+
+    DEVICE_DISPLAY_CAPS : Ti.Platform.displayCaps,
     
     Globals : {}
 };
@@ -194,15 +199,23 @@ function getOSFamily() {
 
 function calculateUIDimension() {
     var displayCaps = Ti.Platform.displayCaps;
-    var w = Math.max(displayCaps.platformWidth, displayCaps.platformHeight);
+    var h = Math.min(displayCaps.platformWidth, displayCaps.platformHeight);
 
-    uiWidth   = w;
-    uiHeight  = (uiWidth * 768) / 1024;
-    //topOffset = (displayCaps.platformHeight - uiHeight) / 2;
+    uiHeight   = displayCaps.platformHeight;
+    uiWidth    = displayCaps.platformWidth;
+    topOffset  = 0;
+    leftOffset = 0;
     
     if (isRetina()) {
-    	uiWidth   *= 2;
-    	uiHeight  *= 2;
-        //topOffset *= 2;
+        uiWidth    *= 2;
+        uiHeight   *= 2;
+        leftOffset *= 2;
     }
+    if (isRetinaHD()) {
+        uiWidth    *= 3;
+        uiHeight   *= 3;
+        leftOffset *= 3;
+    }
+
+    Ti.API.debug("Config | calculateUIDimension | displayCaps(" + displayCaps.platformWidth + ", " + displayCaps.platformHeight + "), uiWidth : " + uiWidth + ", uiHeight : " + uiHeight + ", topOffset : " + topOffset);
 }

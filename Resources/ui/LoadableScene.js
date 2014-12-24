@@ -196,7 +196,7 @@ function LoadableScene(game, fname, basepath, no_menu) {
 
             // Parse values and scale them
             if (l.width == "fill") {
-                l.width = Config.UI_WIDTH;
+                l.width = Config.UI_WINDOW_WIDTH;
             } else {
                 l.width  = parseInt(l.width,  0) * scene.scaleX;
             }
@@ -213,13 +213,13 @@ function LoadableScene(game, fname, basepath, no_menu) {
             }
 
             if (l.left == "center") {
-                l.left = parseInt(Config.UI_WIDTH / 2 - l.width / 2, 0);
+                l.left = parseInt(Config.UI_WINDOW_WIDTH / 2 - l.width / 2, 0);
             } else {
                 l.left = parseInt(l.left, 0) * scene.scaleX;
             }
 
             if (l.right != undefined) {
-                l.left = parseInt(Config.UI_WIDTH - l.right * scene.scaleX - l.width, 0);
+                l.left = parseInt(Config.UI_WINDOW_WIDTH - l.right * scene.scaleX - l.width, 0);
             }
 
             if (l.bottom != undefined) {
@@ -244,7 +244,7 @@ function LoadableScene(game, fname, basepath, no_menu) {
             var baseParams = {
                 x : l.left,
                 y : l.top, // l.no_easing ? l.top : game.screen.height;
-                width  :  l.width,
+                width  : l.width,
                 height : l.height,
                 angle : l.angle || 0,
                 image : Utils.normalize(basepath + l.filename),
