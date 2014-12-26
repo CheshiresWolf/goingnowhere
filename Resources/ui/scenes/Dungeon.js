@@ -103,7 +103,8 @@ function Dungeon(game, window) {
         });
         arrows.top.addEventListener("singletap", function() {
             if (debug) Ti.API.debug("Dungeon | drawArrows | arrows.top event : singletap");
-            move("top");
+            //move("top");
+            arrows.top.event();
         });
         scene.add(arrows.top);
 
@@ -118,7 +119,8 @@ function Dungeon(game, window) {
         });
         arrows.right.addEventListener("singletap", function() {
             if (debug) Ti.API.debug("Dungeon | drawArrows | arrows.right event : singletap");
-            move("right");
+            //move("right");
+            arrows.right.event();
         });
         scene.add(arrows.right);
 
@@ -133,7 +135,8 @@ function Dungeon(game, window) {
         });
         arrows.bottom.addEventListener("singletap", function() {
             if (debug) Ti.API.debug("Dungeon | drawArrows | arrows.bottom event : singletap");
-            move("bottom");
+            //move("bottom");
+            arrows.bottom.event();
         });
         scene.add(arrows.bottom);
 
@@ -148,7 +151,8 @@ function Dungeon(game, window) {
         });
         arrows.left.addEventListener("singletap", function() {
             if (debug) Ti.API.debug("Dungeon | drawArrows | arrows.left event : singletap");
-            move("left");
+            //move("left");
+            arrows.left.event();
         });
         scene.add(arrows.left);
     }
@@ -189,35 +193,43 @@ function Dungeon(game, window) {
     //====================<Logic>====================
 
     function refreshArrows() {
-        var buf = currentTile.isPathOpen(currentTileIndex);
+        var buf = currentTile.templator(currentTileIndex);
 
-        if (!buf[0]) {
+        if (buf.top == null) {
             arrows.top.color(0.5, 0.5, 0.5);
             arrows.top.touchEnabled = false;
+            arrows.top.event = null;
         } else {
             arrows.top.color(1, 1, 1);
             arrows.top.touchEnabled = true;
+            arrows.top.event = buf.top;
         }
-        if (!buf[1]) {
+        if (buf.right == null) {
             arrows.right.color(0.5, 0.5, 0.5);
             arrows.right.touchEnabled = false;
+            arrows.right.event = null;
         } else {
             arrows.right.color(1, 1, 1);
             arrows.right.touchEnabled = true;
+            arrows.right.event = buf.right;
         }
-        if (!buf[2]) {
+        if (buf.bottom == null) {
             arrows.bottom.color(0.5, 0.5, 0.5);
             arrows.bottom.touchEnabled = false;
+            arrows.bottom.event = null;
         } else {
             arrows.bottom.color(1, 1, 1);
             arrows.bottom.touchEnabled = true;
+            arrows.bottom.event = buf.bottom;
         }
-        if (!buf[3]) {
+        if (buf.left == null) {
             arrows.left.color(0.5, 0.5, 0.5);
             arrows.left.touchEnabled = false;
+            arrows.left.event = null;
         } else {
             arrows.left.color(1, 1, 1);
             arrows.left.touchEnabled = true;
+            arrows.left.event = buf.left;
         }
 
         if (debug) Ti.API.debug("Dungeon | refreshArrows | buf : ", buf);
@@ -226,22 +238,22 @@ function Dungeon(game, window) {
     function move(direction) {
         switch (direction) {
             case "top" :
-                currentTileIndex -=3;
+                //currentTileIndex -=3;
                 parent.y += 100 * game.scaleY;
                 player.y -= 100 * game.scaleY;
             break;
             case "right" :
-                currentTileIndex++;
+                //currentTileIndex++;
                 parent.x -= 100 * game.scaleX;
                 player.x += 100 * game.scaleX;
             break;
             case "bottom" :
-                currentTileIndex +=3;
+                //currentTileIndex +=3;
                 parent.y -= 100 * game.scaleY;
                 player.y += 100 * game.scaleY;
             break;
             case "left" :
-                currentTileIndex--;
+                //currentTileIndex--;
                 parent.x += 100 * game.scaleX;
                 player.x -= 100 * game.scaleX;
             break;
@@ -270,60 +282,417 @@ function Dungeon(game, window) {
         scene.add(self.sprite);
 
         self.tileMap = tileOpts.tileMap;
-        self.neighbors = [null, null, null, null];//, null, null, null, null, null];
+        self.neighbors = {
+            top    : null,
+            right  : null,
+            bottom : null,
+            left   : null
+        };
 
-        self.isPathOpen = function(index) {
+        self.templator = function(index) {
             var res = [];
 
-            //top
-            var ti = index - 3;
-            if (ti >= 0 && self.tileMap[ti] != -1) {
-                res[0] = true;
-            } else {
-                if (self.tileMap[index] == 1 && self.neighbors[0] != null) {
-                    res[0] = true;
-                } else {
-                    res[0] = false;
-                }
-            }
+            switch(index) {
+                case 0 :
+                    if (self.tileMap[0] == 1) {
+                        if (self.neighbors.top != null) {
+                            res.top = function() {
+                                move("top");
+                                currentTileIndex = 6;
+                                currentTile = self.neighbors.top;
+                            };
+                        } else {
+                            res.top = null;
+                        }
 
-            //right
-            ti = index + 1;
-            if (ti < 9 && self.tileMap[ti] != -1) {
-                res[1] = true;
-            } else {
-                if (self.tileMap[index] == 1 && self.neighbors[1] != null) {
-                    res[1] = true;
-                } else {
-                    res[1] = false;
-                }
-            }
+                        if (self.neighbors.left != null) {
+                            res.left = function() {
+                                move("left");
+                                currentTileIndex = 2;
+                                currentTile = self.neighbors.left;
+                            };
+                        } else {
+                            res.left = null;
+                        }
+                    } else {
+                        res.top  = null;
+                        res.left = null;
+                    }
 
-            //bottom
-            ti = index + 3;
-            if (ti < 9 && self.tileMap[ti] != -1) {
-                res[2] = true;
-            } else {
-                if (self.tileMap[index] == 1 && self.neighbors[2] != null) {
-                    res[2] = true;
-                } else {
-                    res[2] = false;
-                }
-            }
+                    if (self.tileMap[1] != -1) {
+                        res.right = function() {
+                            move("right");
+                            currentTileIndex = 1;
+                        };
+                    } else {
+                        res.right = null;
+                    }
 
-            //left
-            ti = index - 1;
-            if (ti >= 0 && self.tileMap[ti] != -1) {
-                res[3] = true;
-            } else {
-                if (self.tileMap[index] == 1 && self.neighbors[3] != null) {
-                    res[3] = true;
-                } else {
-                    res[3] = false;
-                }
-            }
+                    if (self.tileMap[3] != -1) {
+                        res.bottom = function() {
+                            move("bottom");
+                            currentTileIndex = 3;
+                        };
+                    } else {
+                        res.bottom = null;
+                    }
 
-            return res;
+                    return res;
+                break;
+                case 1 :
+                    if (self.tileMap[1] == 1) {
+                        if (self.neighbors.top != null) {
+                            res.top = function() {
+                                move("top");
+                                currentTileIndex = 7;
+                                currentTile = self.neighbors.top;
+                            };
+                        } else {
+                            res.top = null;
+                        }
+                    } else {
+                        res.top = null;
+                    }
+
+                    if (self.tileMap[2] != -1) {
+                        res.right = function() {
+                            move("right");
+                            currentTileIndex = 2;
+                        };
+                    } else {
+                        res.right = null;
+                    }
+
+                    if (self.tileMap[4] != -1) {
+                        res.bottom = function() {
+                            move("bottom");
+                            currentTileIndex = 4;
+                        };
+                    } else {
+                        res.bottom = null;
+                    }
+
+                    if (self.tileMap[0] != -1) {
+                        res.left = function() {
+                            move("left");
+                            currentTileIndex = 0;
+                        };
+                    } else {
+                        res.left = null;
+                    }
+
+                    return res;
+                break;
+                case 2 :
+                    if (self.tileMap[2] == 1) {
+                        if (self.neighbors.top != null) {
+                            res.top = function() {
+                                move("top");
+                                currentTileIndex = 8;
+                                currentTile = self.neighbors.top;
+                            };
+                        } else {
+                            res.top = null;
+                        }
+
+                        if (self.neighbors.right != null) {
+                            res.right = function() {
+                                move("right");
+                                currentTileIndex = 0;
+                                currentTile = self.neighbors.right;
+                            };
+                        } else {
+                            res.right = null;
+                        }
+                    } else {
+                        res.top   = null;
+                        res.right = null;
+                    }
+
+                    if (self.tileMap[4] != -1) {
+                        res.bottom = function() {
+                            move("bottom");
+                            currentTileIndex = 4;
+                        };
+                    } else {
+                        res.bottom = null;
+                    }
+
+                    if (self.tileMap[1] != -1) {
+                        res.left = function() {
+                            move("left");
+                            currentTileIndex = 1;
+                        };
+                    } else {
+                        res.left = null;
+                    }
+
+                    return res;
+                break;
+                case 3 :
+                    if (self.tileMap[0] != -1) {
+                        res.top = function() {
+                            move("top");
+                            currentTileIndex = 0;
+                        };
+                    } else {
+                        res.top = null;
+                    }
+
+                    if (self.tileMap[4] != -1) {
+                        res.right = function() {
+                            move("right");
+                            currentTileIndex = 4;
+                        };
+                    } else {
+                        res.right = null;
+                    }
+
+                    if (self.tileMap[6] != -1) {
+                        res.bottom = function() {
+                            move("bottom");
+                            currentTileIndex = 6;
+                        };
+                    } else {
+                        res.bottom = null;
+                    }
+
+                    if (self.tileMap[3] == 1) {
+                        if (self.neighbors.left != null) {
+                            res.left = function() {
+                                move("left");
+                                currentTileIndex = 5;
+                                currentTile = self.neighbors.left;
+                            };
+                        } else {
+                            res.left = null;
+                        }
+                    } else {
+                        res.left = null;
+                    }
+
+                    return res;
+                break;
+                case 4 :
+                    if (self.tileMap[1] != -1) {
+                        res.top = function() {
+                            move("top");
+                            currentTileIndex = 1;
+                        };
+                    } else {
+                        res.top = null;
+                    }
+
+                    if (self.tileMap[5] != -1) {
+                        res.right = function() {
+                            move("right");
+                            currentTileIndex = 5;
+                        };
+                    } else {
+                        res.right = null;
+                    }
+
+                    if (self.tileMap[7] != -1) {
+                        res.bottom = function() {
+                            move("bottom");
+                            currentTileIndex = 7;
+                        };
+                    } else {
+                        res.bottom = null;
+                    }
+
+                    if (self.tileMap[3] != -1) {
+                        res.left = function() {
+                            move("left");
+                            currentTileIndex = 3;
+                        };
+                    } else {
+                        res.left = null;
+                    }
+
+                    return res;
+                break;
+                case 5 :
+                    if (self.tileMap[2] != -1) {
+                        res.top = function() {
+                            move("top");
+                            currentTileIndex = 2;
+                        };
+                    } else {
+                        res.top = null;
+                    }
+
+                    if (self.tileMap[5] == 1) {
+                        if (self.neighbors.right != null) {
+                            res.right = function() {
+                                move("right");
+                                currentTileIndex = 5;
+                                currentTile = self.neighbors.right;
+                            };
+                        } else {
+                            res.right = null;
+                        }
+                    } else {
+                        res.right = null;
+                    }
+
+                    if (self.tileMap[8] != -1) {
+                        res.bottom = function() {
+                            move("bottom");
+                            currentTileIndex = 8;
+                        };
+                    } else {
+                        res.bottom = null;
+                    }
+
+                    if (self.tileMap[4] != -1) {
+                        res.left = function() {
+                            move("left");
+                            currentTileIndex = 4;
+                        };
+                    } else {
+                        res.left = null;
+                    }
+
+                    return res;
+                break;
+                case 6 :
+                    if (self.tileMap[3] != -1) {
+                        res.top = function() {
+                            move("top");
+                            currentTileIndex = 3;
+                        };
+                    } else {
+                        res.top = null;
+                    }
+
+                    if (self.tileMap[7] != -1) {
+                        res.right = function() {
+                            move("right");
+                            currentTileIndex = 7;
+                        };
+                    } else {
+                        res.right = null;
+                    }
+
+                    if (self.tileMap[6] == 1) {
+                        if (self.neighbors.bottom != null) {
+                            res.bottom = function() {
+                                move("bottom");
+                                currentTileIndex = 0;
+                                currentTile = self.neighbors.bottom;
+                            };
+                        } else {
+                            res.bottom = null;
+                        }
+
+                        if (self.neighbors.left != null) {
+                            res.left = function() {
+                                move("left");
+                                currentTileIndex = 8;
+                                currentTile = self.neighbors.left;
+                            };
+                        } else {
+                            res.left = null;
+                        }
+                    } else {
+                        res.bottom = null;
+                        res.left   = null;
+                    }
+
+                    return res;
+                break;
+                case 7 :
+                    if (self.tileMap[4] != -1) {
+                        res.top = function() {
+                            move("top");
+                            currentTileIndex = 4;
+                        };
+                    } else {
+                        res.top = null;
+                    }
+
+                    if (self.tileMap[8] != -1) {
+                        res.right = function() {
+                            move("right");
+                            currentTileIndex = 8;
+                        };
+                    } else {
+                        res.right = null;
+                    }
+
+                    if (self.tileMap[7] == 1) {
+                        if (self.neighbors.bottom != null) {
+                            res.bottom = function() {
+                                move("bottom");
+                                currentTileIndex = 1;
+                                currentTile = self.neighbors.bottom;
+                            };
+                        } else {
+                            res.bottom = null;
+                        }
+                    } else {
+                        res.bottom = null;
+                    }
+
+                    if (self.tileMap[6] != -1) {
+                        res.left = function() {
+                            move("left");
+                            currentTileIndex = 6;
+                        };
+                    } else {
+                        res.left = null;
+                    }
+
+                    return res;
+                break;
+                case 8 :
+                    if (self.tileMap[5] != -1) {
+                        res.top = function() {
+                            move("top");
+                            currentTileIndex = 5;
+                        };
+                    } else {
+                        res.top = null;
+                    }
+
+                    if (self.tileMap[8] == 1) {
+                        if (self.neighbors.right != null) {
+                            res.right = function() {
+                                move("right");
+                                currentTileIndex = 6;
+                                currentTile = self.neighbors.right;
+                            };
+                        } else {
+                            res.right = null;
+                        }
+
+                        if (self.neighbors.bottom != null) {
+                            res.bottom = function() {
+                                move("bottom");
+                                currentTileIndex = 2;
+                                currentTile = self.neighbors.bottom;
+                            };
+                        } else {
+                            res.bottom = null;
+                        }
+                    } else {
+                        res.right  = null;
+                        res.bottom = null;
+                    }
+
+                    if (self.tileMap[7] != -1) {
+                        res.left = function() {
+                            move("left");
+                            currentTileIndex = 7;
+                        };
+                    } else {
+                        res.left = null;
+                    }
+
+                    return res;
+                break;
+            }
         };
         
         return self;
