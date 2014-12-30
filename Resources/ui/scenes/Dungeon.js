@@ -1,12 +1,13 @@
 var quicktigame2d = require("com.ti.game2d");
 var Config = require("config");
+var tileChooser = require("modules/TileChooser");
 
 var debug = true;
 
 function Dungeon(game, window) {
 
     var LoadableScene = game.require("/ui/LoadableScene");
-    var basepath = "images/scenes/dungeon/"
+    var basepath = "images/scenes/dungeon/";
     var scene = new LoadableScene(
         game,
         Ti.Filesystem.resourcesDirectory + "images/scenes/dungeon/dungeon.jscene",
@@ -18,6 +19,8 @@ function Dungeon(game, window) {
     //====================<init>====================
 
     var currentTile, currentTileIndex;
+
+    var tileArray = {};
 
     var background = quicktigame2d.createSprite({
         x : 0,
@@ -48,23 +51,8 @@ function Dungeon(game, window) {
     scene.add(parent);
 
     var player = null;
-    drawPlayer();
 
-    var tiles = [
-        { name : "b0.png", tileMap : [  0,  1,  0,  1, 0,  1,  0,  1,  0] },
-        { name : "q0.png", tileMap : [ -1,  1, -1,  0, 0,  1,  0,  0, -1] },
-        { name : "q1.png", tileMap : [  0,  0, -1,  0, 0,  1, -1,  1, -1] },
-        { name : "q2.png", tileMap : [ -1,  0,  0,  1, 0,  0, -1,  1, -1] },
-        { name : "q3.png", tileMap : [ -1,  1, -1,  1, 0,  0, -1,  0,  0] },
-        { name : "t0.png", tileMap : [ -1,  1, -1,  1, 0,  1, -1, -1, -1] },
-        { name : "t1.png", tileMap : [ -1,  1, -1, -1, 0,  1, -1,  1, -1] },
-        { name : "t2.png", tileMap : [ -1, -1, -1,  1, 0,  1, -1,  1, -1] },
-        { name : "t3.png", tileMap : [ -1,  1, -1,  1, 0, -1, -1,  1, -1] },
-        { name : "e0.png", tileMap : [ -1,  1, -1, -1, 0, -1, -1, -1, -1] },
-        { name : "e1.png", tileMap : [ -1, -1, -1, -1, 0,  1, -1, -1, -1] },
-        { name : "e2.png", tileMap : [ -1, -1, -1, -1, 0, -1, -1,  1, -1] },
-        { name : "e3.png", tileMap : [ -1, -1, -1,  1, 0, -1, -1, -1, -1] }
-    ];
+    drawPlayer();
     drawMap();
 
     //===================</init>====================
@@ -102,8 +90,6 @@ function Dungeon(game, window) {
             touchEnabled : true
         });
         arrows.top.addEventListener("singletap", function() {
-            if (debug) Ti.API.debug("Dungeon | drawArrows | arrows.top event : singletap");
-            //move("top");
             arrows.top.event();
         });
         scene.add(arrows.top);
@@ -118,8 +104,6 @@ function Dungeon(game, window) {
             touchEnabled : true
         });
         arrows.right.addEventListener("singletap", function() {
-            if (debug) Ti.API.debug("Dungeon | drawArrows | arrows.right event : singletap");
-            //move("right");
             arrows.right.event();
         });
         scene.add(arrows.right);
@@ -134,8 +118,6 @@ function Dungeon(game, window) {
             touchEnabled : true
         });
         arrows.bottom.addEventListener("singletap", function() {
-            if (debug) Ti.API.debug("Dungeon | drawArrows | arrows.bottom event : singletap");
-            //move("bottom");
             arrows.bottom.event();
         });
         scene.add(arrows.bottom);
@@ -150,20 +132,18 @@ function Dungeon(game, window) {
             touchEnabled : true
         });
         arrows.left.addEventListener("singletap", function() {
-            if (debug) Ti.API.debug("Dungeon | drawArrows | arrows.left event : singletap");
-            //move("left");
             arrows.left.event();
         });
         scene.add(arrows.left);
     }
 
     function drawMap() {
-        var tile = new mapTile(getRandomFromArray(tiles), {
+        var tile = new mapTile(tileChooser.getRandomTile(), {
             x : Config.UI_WIDTH  / 2 - 150 * game.scaleX,
             y : Config.UI_HEIGHT / 2 - 150 * game.scaleY,
             width  : 300 * game.scaleX,
             height : 300 * game.scaleY,
-        });
+        }, "0,0");
 
         currentTile = tile;
         currentTileIndex = 4;
@@ -171,8 +151,51 @@ function Dungeon(game, window) {
         refreshArrows();
     }
 
-    function drawCards() {
+    function drawCard(direction) {
+        var bx = currentTile.sprite.x;
+        var by = currentTile.sprite.y;
 
+        var bufIndex = currentTile.name.split(",");
+        bufIndex[0] = parseInt(bufIndex[0]);
+        bufIndex[1] = parseInt(bufIndex[1]);
+
+        switch (direction) {
+            case "top" :
+                by -= 300 * game.scaleY;
+                bufIndex[1] -= 1;
+            break;
+            case "right" :
+                bx += 300 * game.scaleX;
+                bufIndex[0] += 1;
+            break;
+            case "left" :
+                bx -= 300 * game.scaleX;
+                bufIndex[0] -= 1;
+            break;
+            case "bottom" :
+                by += 300 * game.scaleY;
+                bufIndex[1] += 1;
+            break;
+        }
+
+        var restrictions = [
+            ( formRuleByName( bufIndex[0] + "," + (bufIndex[1] - 1), "top"    ) ),
+            ( formRuleByName( (bufIndex[0] + 1) + "," + bufIndex[1], "right"  ) ),
+            ( formRuleByName( bufIndex[0] + "," + (bufIndex[1] + 1), "bottom" ) ),
+            ( formRuleByName( (bufIndex[0] - 1) + "," + bufIndex[1], "left"   ) )
+        ];
+
+
+        var tile = new mapTile(tileChooser.getRandomRestrictedTile(restrictions), {
+            x : bx,
+            y : by,
+            width  : 300 * game.scaleX,
+            height : 300 * game.scaleY,
+        }, bufIndex[0] + "," + bufIndex[1]);
+
+        if (debug) Ti.API.debug("Dungeon | drawCard | name : (" + bufIndex[0] + "," + bufIndex[1] + "), pos(" + tile.sprite.x + "," + tile.sprite.y + ")");
+
+        return tile;
     }
 
     function drawPlayer() {
@@ -193,6 +216,7 @@ function Dungeon(game, window) {
     //====================<Logic>====================
 
     function refreshArrows() {
+        if (debug) Ti.API.debug("Dungeon | refreshArrows | currentTileIndex : " + currentTileIndex + ", currentTile.name : " + currentTile.name);
         var buf = currentTile.templator(currentTileIndex);
 
         if (buf.top == null) {
@@ -231,8 +255,6 @@ function Dungeon(game, window) {
             arrows.left.touchEnabled = true;
             arrows.left.event = buf.left;
         }
-
-        if (debug) Ti.API.debug("Dungeon | refreshArrows | buf : ", buf);
     }
 
     function move(direction) {
@@ -259,17 +281,54 @@ function Dungeon(game, window) {
             break;
         }
 
+        useCard();
         refreshArrows();
+    }
+
+    function useCard() {
+        if (currentTile.tileMap[currentTileIndex] == 1) {
+            var buf;
+            switch (currentTileIndex) {
+                case 1 :
+                    if (currentTile.neighbors.top == null) {
+                        buf = drawCard("top");
+                        currentTile.neighbors.top = buf;
+                        buf.neighbors.bottom = currentTile;
+                    }
+                break;
+                case 3 :
+                    if (currentTile.neighbors.left == null) {
+                        buf = drawCard("left");
+                        currentTile.neighbors.left = buf;
+                        buf.neighbors.right = currentTile;
+                    }
+                break;
+                case 5 :
+                    if (currentTile.neighbors.right == null) {
+                        buf = drawCard("right");
+                        currentTile.neighbors.right = buf;
+                        buf.neighbors.left = currentTile;
+                    }
+                break;
+                case 7 :
+                    if (currentTile.neighbors.bottom == null) {
+                        buf = drawCard("bottom");
+                        currentTile.neighbors.bottom = buf;
+                        buf.neighbors.top = currentTile;
+                    }
+                break;
+            }
+        }
     }
 
     //===================</Logic>====================
 
     //====================<Class>====================
 
-    function mapTile(tileOpts, rect) {
+    function mapTile(tileOpts, rect, gridName) {
         var self = this;
 
-        self.name = tileOpts.name;
+        self.name = gridName;//tileOpts.name;
         self.sprite = quicktigame2d.createSprite({
             x : rect.x,
             y : rect.y,
@@ -297,9 +356,9 @@ function Dungeon(game, window) {
                     if (self.tileMap[0] == 1) {
                         if (self.neighbors.top != null) {
                             res.top = function() {
-                                move("top");
                                 currentTileIndex = 6;
                                 currentTile = self.neighbors.top;
+                                move("top");
                             };
                         } else {
                             res.top = null;
@@ -307,9 +366,9 @@ function Dungeon(game, window) {
 
                         if (self.neighbors.left != null) {
                             res.left = function() {
-                                move("left");
                                 currentTileIndex = 2;
                                 currentTile = self.neighbors.left;
+                                move("left");
                             };
                         } else {
                             res.left = null;
@@ -321,8 +380,8 @@ function Dungeon(game, window) {
 
                     if (self.tileMap[1] != -1) {
                         res.right = function() {
-                            move("right");
                             currentTileIndex = 1;
+                            move("right");
                         };
                     } else {
                         res.right = null;
@@ -330,8 +389,8 @@ function Dungeon(game, window) {
 
                     if (self.tileMap[3] != -1) {
                         res.bottom = function() {
-                            move("bottom");
                             currentTileIndex = 3;
+                            move("bottom");
                         };
                     } else {
                         res.bottom = null;
@@ -343,9 +402,9 @@ function Dungeon(game, window) {
                     if (self.tileMap[1] == 1) {
                         if (self.neighbors.top != null) {
                             res.top = function() {
-                                move("top");
                                 currentTileIndex = 7;
                                 currentTile = self.neighbors.top;
+                                move("top");
                             };
                         } else {
                             res.top = null;
@@ -356,8 +415,8 @@ function Dungeon(game, window) {
 
                     if (self.tileMap[2] != -1) {
                         res.right = function() {
-                            move("right");
                             currentTileIndex = 2;
+                            move("right");
                         };
                     } else {
                         res.right = null;
@@ -365,8 +424,8 @@ function Dungeon(game, window) {
 
                     if (self.tileMap[4] != -1) {
                         res.bottom = function() {
-                            move("bottom");
                             currentTileIndex = 4;
+                            move("bottom");
                         };
                     } else {
                         res.bottom = null;
@@ -374,8 +433,8 @@ function Dungeon(game, window) {
 
                     if (self.tileMap[0] != -1) {
                         res.left = function() {
-                            move("left");
                             currentTileIndex = 0;
+                            move("left");
                         };
                     } else {
                         res.left = null;
@@ -387,9 +446,9 @@ function Dungeon(game, window) {
                     if (self.tileMap[2] == 1) {
                         if (self.neighbors.top != null) {
                             res.top = function() {
-                                move("top");
                                 currentTileIndex = 8;
                                 currentTile = self.neighbors.top;
+                                move("top");
                             };
                         } else {
                             res.top = null;
@@ -397,9 +456,9 @@ function Dungeon(game, window) {
 
                         if (self.neighbors.right != null) {
                             res.right = function() {
-                                move("right");
                                 currentTileIndex = 0;
                                 currentTile = self.neighbors.right;
+                                move("right");
                             };
                         } else {
                             res.right = null;
@@ -411,8 +470,8 @@ function Dungeon(game, window) {
 
                     if (self.tileMap[4] != -1) {
                         res.bottom = function() {
-                            move("bottom");
                             currentTileIndex = 4;
+                            move("bottom");
                         };
                     } else {
                         res.bottom = null;
@@ -420,8 +479,8 @@ function Dungeon(game, window) {
 
                     if (self.tileMap[1] != -1) {
                         res.left = function() {
-                            move("left");
                             currentTileIndex = 1;
+                            move("left");
                         };
                     } else {
                         res.left = null;
@@ -432,8 +491,8 @@ function Dungeon(game, window) {
                 case 3 :
                     if (self.tileMap[0] != -1) {
                         res.top = function() {
-                            move("top");
                             currentTileIndex = 0;
+                            move("top");
                         };
                     } else {
                         res.top = null;
@@ -441,8 +500,8 @@ function Dungeon(game, window) {
 
                     if (self.tileMap[4] != -1) {
                         res.right = function() {
-                            move("right");
                             currentTileIndex = 4;
+                            move("right");
                         };
                     } else {
                         res.right = null;
@@ -450,8 +509,8 @@ function Dungeon(game, window) {
 
                     if (self.tileMap[6] != -1) {
                         res.bottom = function() {
-                            move("bottom");
                             currentTileIndex = 6;
+                            move("bottom");
                         };
                     } else {
                         res.bottom = null;
@@ -460,9 +519,9 @@ function Dungeon(game, window) {
                     if (self.tileMap[3] == 1) {
                         if (self.neighbors.left != null) {
                             res.left = function() {
-                                move("left");
                                 currentTileIndex = 5;
                                 currentTile = self.neighbors.left;
+                                move("left");
                             };
                         } else {
                             res.left = null;
@@ -476,8 +535,8 @@ function Dungeon(game, window) {
                 case 4 :
                     if (self.tileMap[1] != -1) {
                         res.top = function() {
-                            move("top");
                             currentTileIndex = 1;
+                            move("top");
                         };
                     } else {
                         res.top = null;
@@ -485,8 +544,8 @@ function Dungeon(game, window) {
 
                     if (self.tileMap[5] != -1) {
                         res.right = function() {
-                            move("right");
                             currentTileIndex = 5;
+                            move("right");
                         };
                     } else {
                         res.right = null;
@@ -494,8 +553,8 @@ function Dungeon(game, window) {
 
                     if (self.tileMap[7] != -1) {
                         res.bottom = function() {
-                            move("bottom");
                             currentTileIndex = 7;
+                            move("bottom");
                         };
                     } else {
                         res.bottom = null;
@@ -503,8 +562,8 @@ function Dungeon(game, window) {
 
                     if (self.tileMap[3] != -1) {
                         res.left = function() {
-                            move("left");
                             currentTileIndex = 3;
+                            move("left");
                         };
                     } else {
                         res.left = null;
@@ -515,8 +574,8 @@ function Dungeon(game, window) {
                 case 5 :
                     if (self.tileMap[2] != -1) {
                         res.top = function() {
-                            move("top");
                             currentTileIndex = 2;
+                            move("top");
                         };
                     } else {
                         res.top = null;
@@ -525,9 +584,9 @@ function Dungeon(game, window) {
                     if (self.tileMap[5] == 1) {
                         if (self.neighbors.right != null) {
                             res.right = function() {
-                                move("right");
-                                currentTileIndex = 5;
+                                currentTileIndex = 3;
                                 currentTile = self.neighbors.right;
+                                move("right");
                             };
                         } else {
                             res.right = null;
@@ -538,8 +597,8 @@ function Dungeon(game, window) {
 
                     if (self.tileMap[8] != -1) {
                         res.bottom = function() {
-                            move("bottom");
                             currentTileIndex = 8;
+                            move("bottom");
                         };
                     } else {
                         res.bottom = null;
@@ -547,8 +606,8 @@ function Dungeon(game, window) {
 
                     if (self.tileMap[4] != -1) {
                         res.left = function() {
-                            move("left");
                             currentTileIndex = 4;
+                            move("left");
                         };
                     } else {
                         res.left = null;
@@ -559,8 +618,8 @@ function Dungeon(game, window) {
                 case 6 :
                     if (self.tileMap[3] != -1) {
                         res.top = function() {
-                            move("top");
                             currentTileIndex = 3;
+                            move("top");
                         };
                     } else {
                         res.top = null;
@@ -568,8 +627,8 @@ function Dungeon(game, window) {
 
                     if (self.tileMap[7] != -1) {
                         res.right = function() {
-                            move("right");
                             currentTileIndex = 7;
+                            move("right");
                         };
                     } else {
                         res.right = null;
@@ -578,9 +637,9 @@ function Dungeon(game, window) {
                     if (self.tileMap[6] == 1) {
                         if (self.neighbors.bottom != null) {
                             res.bottom = function() {
-                                move("bottom");
                                 currentTileIndex = 0;
                                 currentTile = self.neighbors.bottom;
+                                move("bottom");
                             };
                         } else {
                             res.bottom = null;
@@ -588,9 +647,9 @@ function Dungeon(game, window) {
 
                         if (self.neighbors.left != null) {
                             res.left = function() {
-                                move("left");
                                 currentTileIndex = 8;
                                 currentTile = self.neighbors.left;
+                                move("left");
                             };
                         } else {
                             res.left = null;
@@ -605,8 +664,8 @@ function Dungeon(game, window) {
                 case 7 :
                     if (self.tileMap[4] != -1) {
                         res.top = function() {
-                            move("top");
                             currentTileIndex = 4;
+                            move("top");
                         };
                     } else {
                         res.top = null;
@@ -614,8 +673,8 @@ function Dungeon(game, window) {
 
                     if (self.tileMap[8] != -1) {
                         res.right = function() {
-                            move("right");
                             currentTileIndex = 8;
+                            move("right");
                         };
                     } else {
                         res.right = null;
@@ -624,9 +683,9 @@ function Dungeon(game, window) {
                     if (self.tileMap[7] == 1) {
                         if (self.neighbors.bottom != null) {
                             res.bottom = function() {
-                                move("bottom");
                                 currentTileIndex = 1;
                                 currentTile = self.neighbors.bottom;
+                                move("bottom");
                             };
                         } else {
                             res.bottom = null;
@@ -637,8 +696,8 @@ function Dungeon(game, window) {
 
                     if (self.tileMap[6] != -1) {
                         res.left = function() {
-                            move("left");
                             currentTileIndex = 6;
+                            move("left");
                         };
                     } else {
                         res.left = null;
@@ -649,8 +708,8 @@ function Dungeon(game, window) {
                 case 8 :
                     if (self.tileMap[5] != -1) {
                         res.top = function() {
-                            move("top");
                             currentTileIndex = 5;
+                            move("top");
                         };
                     } else {
                         res.top = null;
@@ -659,9 +718,9 @@ function Dungeon(game, window) {
                     if (self.tileMap[8] == 1) {
                         if (self.neighbors.right != null) {
                             res.right = function() {
-                                move("right");
                                 currentTileIndex = 6;
                                 currentTile = self.neighbors.right;
+                                move("right");
                             };
                         } else {
                             res.right = null;
@@ -669,9 +728,9 @@ function Dungeon(game, window) {
 
                         if (self.neighbors.bottom != null) {
                             res.bottom = function() {
-                                move("bottom");
                                 currentTileIndex = 2;
                                 currentTile = self.neighbors.bottom;
+                                move("bottom");
                             };
                         } else {
                             res.bottom = null;
@@ -683,8 +742,8 @@ function Dungeon(game, window) {
 
                     if (self.tileMap[7] != -1) {
                         res.left = function() {
-                            move("left");
                             currentTileIndex = 7;
+                            move("left");
                         };
                     } else {
                         res.left = null;
@@ -694,6 +753,8 @@ function Dungeon(game, window) {
                 break;
             }
         };
+
+        tileArray[gridName] = self;
         
         return self;
     }
@@ -716,6 +777,53 @@ function Dungeon(game, window) {
         }
 
         return array[getRandomInt(0, array.length - 1)];
+    }
+
+    function getTileByName(name) {
+        if (tileArray[name] != undefined) {
+            return tileArray[name];
+        }
+
+        return null;
+    }
+
+    function formRuleByName(name, direction) {
+        var tile = getTileByName(name);
+
+        if (tile != null) {
+            switch (direction) {
+                case "top" :
+                    if (tile.tileMap[7] == 1) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                break;
+                case "right" :
+                    if (tile.tileMap[3] == 1) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                break;
+                case "left" :
+                    if (tile.tileMap[5] == 1) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                break;
+                case "bottom" :
+                    if (tile.tileMap[1] == 1) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                break;
+            }
+        }
+
+        return -1;
     }
 
     //===================</Utils>====================
