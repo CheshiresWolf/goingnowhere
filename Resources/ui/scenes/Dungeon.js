@@ -32,6 +32,8 @@ function Dungeon(game, window) {
     });
     scene.add(background);
 
+    var zoom, zoomFlag = true;
+
     var arrows = {
         top    : null,
         right  : null,
@@ -90,7 +92,7 @@ function Dungeon(game, window) {
             touchEnabled : true
         });
         arrows.top.addEventListener("singletap", function() {
-            arrows.top.event();
+            if (arrows.top.event != null) arrows.top.event();
         });
         scene.add(arrows.top);
 
@@ -104,7 +106,7 @@ function Dungeon(game, window) {
             touchEnabled : true
         });
         arrows.right.addEventListener("singletap", function() {
-            arrows.right.event();
+            if (arrows.right.event != null) arrows.right.event();
         });
         scene.add(arrows.right);
 
@@ -118,7 +120,7 @@ function Dungeon(game, window) {
             touchEnabled : true
         });
         arrows.bottom.addEventListener("singletap", function() {
-            arrows.bottom.event();
+            if (arrows.bottom.event != null) arrows.bottom.event();
         });
         scene.add(arrows.bottom);
 
@@ -132,9 +134,33 @@ function Dungeon(game, window) {
             touchEnabled : true
         });
         arrows.left.addEventListener("singletap", function() {
-            arrows.left.event();
+            if (arrows.left.event != null) arrows.left.event();
         });
         scene.add(arrows.left);
+
+        zoom = quicktigame2d.createSprite({
+            x : Config.UI_WIDTH - 110 * game.scaleX,
+            y : 10 * game.scaleY,
+            z : 10,
+            width  : 100 * game.scaleX,
+            height : 100 * game.scaleY,
+            image  : basepath + "zoom.png",
+            touchEnabled : true
+        });
+        zoom.addEventListener("singletap", function() {
+            Ti.API.debug("Dungeon | drawArrows | zoom event : singletap");
+
+            if (zoomFlag) {
+                zoomFlag = false;
+                //changeCameraZ(700, 1);
+                scaleParent(0.33);
+            } else {
+                zoomFlag = true;
+                //changeCameraZ(null, 1);
+                scaleParent(1);
+            }
+        });
+        scene.add(zoom);
     }
 
     function drawMap() {
@@ -194,6 +220,21 @@ function Dungeon(game, window) {
         }, bufIndex[0] + "," + bufIndex[1]);
 
         if (debug) Ti.API.debug("Dungeon | drawCard | name : (" + bufIndex[0] + "," + bufIndex[1] + "), pos(" + tile.sprite.x + "," + tile.sprite.y + ")");
+
+        // save neighbours
+        tile.neighbors.top = getTileByName( bufIndex[0] + "," + (bufIndex[1] - 1) );
+        if (tile.neighbors.top != null) tile.neighbors.top.neighbors.bottom = tile;
+
+        tile.neighbors.right = getTileByName( (bufIndex[0] + 1) + "," + bufIndex[1] );
+        if (tile.neighbors.right != null) tile.neighbors.right.neighbors.left = tile;
+
+        tile.neighbors.bottom = getTileByName( bufIndex[0] + "," + (bufIndex[1] + 1) );
+        if (tile.neighbors.bottom != null) tile.neighbors.bottom.neighbors.top = tile;
+
+        tile.neighbors.left = getTileByName( (bufIndex[0] - 1) + "," + bufIndex[1] );
+        if (tile.neighbors.left != null) tile.neighbors.left.neighbors.right = tile;
+
+        tile.print();
 
         return tile;
     }
@@ -293,28 +334,28 @@ function Dungeon(game, window) {
                     if (currentTile.neighbors.top == null) {
                         buf = drawCard("top");
                         currentTile.neighbors.top = buf;
-                        buf.neighbors.bottom = currentTile;
+                        //buf.neighbors.bottom = currentTile;
                     }
                 break;
                 case 3 :
                     if (currentTile.neighbors.left == null) {
                         buf = drawCard("left");
                         currentTile.neighbors.left = buf;
-                        buf.neighbors.right = currentTile;
+                        //buf.neighbors.right = currentTile;
                     }
                 break;
                 case 5 :
                     if (currentTile.neighbors.right == null) {
                         buf = drawCard("right");
                         currentTile.neighbors.right = buf;
-                        buf.neighbors.left = currentTile;
+                        //buf.neighbors.left = currentTile;
                     }
                 break;
                 case 7 :
                     if (currentTile.neighbors.bottom == null) {
                         buf = drawCard("bottom");
                         currentTile.neighbors.bottom = buf;
-                        buf.neighbors.top = currentTile;
+                        //buf.neighbors.top = currentTile;
                     }
                 break;
             }
@@ -755,6 +796,26 @@ function Dungeon(game, window) {
         };
 
         tileArray[gridName] = self;
+
+        self.print = function() {
+            var res = "Dungeon | Tile : {";
+            res += "\n    name : '" + self.name + "',";
+            res += "\n    x : " + self.sprite.x + ",";
+            res += "\n    y : " + self.sprite.y + ",";
+            res += "\n    map : [";
+            res += "\n        \t" + self.tileMap[0] + ",\t" + self.tileMap[1] + ",\t" + self.tileMap[2];
+            res += "\n        \t" + self.tileMap[3] + ",\t" + self.tileMap[4] + ",\t" + self.tileMap[5];
+            res += "\n        \t" + self.tileMap[6] + ",\t" + self.tileMap[7] + ",\t" + self.tileMap[8];
+            res += "\n    ],";
+            res += "\n    neighbors : {";
+            res += "\n          " + ( (self.neighbors.top != null) ? "+" : "-" );
+            res += "\n        " + ( (self.neighbors.left != null) ? "+" : "-" ) + "   " + ( (self.neighbors.right != null) ? "+" : "-" );
+            res += "\n          " + ( (self.neighbors.bottom != null) ? "+" : "-" );
+            res += "\n    },";
+            res += "\n}";
+
+            Ti.API.debug(res);
+        };
         
         return self;
     }
@@ -824,6 +885,25 @@ function Dungeon(game, window) {
         }
 
         return -1;
+    }
+
+    var oldX = 0, oldY = 0;
+    function scaleParent(index) {
+        if (index != 1) {
+            oldX = parent.x;
+            oldY = parent.y;
+        }
+
+        scene.singleTransform(parent, {
+            //x : ((index != 1) ? (parent.x * index / 2) : oldX),
+            //y : ((index != 1) ? (parent.y * index / 2) : oldY),
+            scaleX : index,
+            scaleY : index,
+            scale_centerX : parent.x + Config.UI_WIDTH  / 2,//0.5,
+            scale_centerY : parent.y + Config.UI_HEIGHT / 2,//0.5,
+            duration : 1,
+            name : "scale_parent"
+        });
     }
 
     //===================</Utils>====================
